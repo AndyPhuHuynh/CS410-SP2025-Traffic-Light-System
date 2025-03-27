@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() {
   runApp(const TrafficLightApp());
@@ -66,6 +67,69 @@ class TrafficLightApp extends StatelessWidget {
               )
           )
       )
+    );
+  }
+}
+
+class CountdownTimer extends StatefulWidget {
+  const CountdownTimer({super.key});
+
+  @override
+  State<CountdownTimer> createState() => _CountdownTimerState();
+}
+
+class _CountdownTimerState extends State<CountdownTimer> {
+  int _remainingTime = 10; // Initial time in seconds
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingTime > 0) {
+          _remainingTime--;
+        } else {
+          timer.cancel(); // Stop the timer when it reaches 0
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer to prevent memory leaks
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Light Change Time:')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Time remaining: $_remainingTime seconds',
+              style: const TextStyle(fontSize: 20),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _remainingTime = 10; // Reset timer
+                });
+                startTimer();
+              },
+              child: const Text('Restart'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
