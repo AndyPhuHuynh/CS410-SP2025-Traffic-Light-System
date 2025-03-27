@@ -27,37 +27,37 @@ class TrafficLightApp extends StatelessWidget {
                   children: <Widget>[
                     lightRectangle,
                     Positioned(
-                      top: 10.0,
-                      left: 10.0,
+                      left: 40.0,
+                      top: 50.0,
                       child: Container (
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
+                            color: Color(0x00086470),
                             shape: BoxShape.circle,
                           )
                       ),
                     ),
                     Positioned(
-                      top: 10.0,
-                      left: 60.0,
+                      left: 150.0,
+                      top: 50.0,
                       child: Container (
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
+                            color: Colors.yellow,
                             shape: BoxShape.circle,
                           )
                       ),
                     ),
                     Positioned(
-                      top: 10.0,
-                      right: 110.0,
+                      left: 260.0,
+                      top: 50.0,
                       child: Container (
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
+                            color: Colors.green,
                             shape: BoxShape.circle,
                           )
                       ),
