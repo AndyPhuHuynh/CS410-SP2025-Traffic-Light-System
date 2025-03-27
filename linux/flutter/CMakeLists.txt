@@ -1,4 +1,8 @@
-# This file controls Flutter-level build steps. It should not be edited.
+# The configuration file for CMake
+# CMake is a tool to manage the build process in a platform-independent way
+# Defines how project is complied, linked, and built
+
+# This file controls Flutter-level build steps. It SHOULD NOT BE EDITED.
 cmake_minimum_required(VERSION 3.10)
 
 set(EPHEMERAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ephemeral")
