@@ -20,8 +20,8 @@ class TrafficLightApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      color: Colors.green,
-      home: Scaffold(
+      color: Colors.grey,
+        home: Scaffold(
           body: Center(
               child: Stack(
                   children: <Widget>[
@@ -33,7 +33,7 @@ class TrafficLightApp extends StatelessWidget {
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Color(0x00086470),
+                            color: Color(0xFF5A0000),
                             shape: BoxShape.circle,
                           )
                       ),
@@ -45,7 +45,7 @@ class TrafficLightApp extends StatelessWidget {
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Colors.yellow,
+                            color: Color(0xFF8B6A00),
                             shape: BoxShape.circle,
                           )
                       ),
@@ -57,7 +57,7 @@ class TrafficLightApp extends StatelessWidget {
                           width: 100.0,
                           height: 100.0,
                           decoration: BoxDecoration(
-                            color: Colors.green,
+                            color: Color(0xFF00FF00),
                             shape: BoxShape.circle,
                           )
                       ),
