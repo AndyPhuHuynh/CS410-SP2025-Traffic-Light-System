@@ -46,6 +46,14 @@ class _TrafficModuleState extends State<TrafficModule> {
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
 
+  // the sensors
+  // false: no detection, default lights
+  // bool lineSensor = false; // no detection, (if detection + red) -> yellow
+  // bool pirSensor = false; // no detection, (if detection + green) -> red
+
+  // add functions if active
+  // add functions to send to output
+
   @override
   void initState() { // the initial state
     super.initState(); // calls the parent class's initState()
