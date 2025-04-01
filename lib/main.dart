@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart'; // import for user interface
 import 'dart:async'; // import for timer
 
-// the main() is the start of everything
-void main() {
+void main() { // the main() is the start of everything
   runApp(const TrafficLightApp()); // call the application
 }
 
@@ -13,12 +12,14 @@ class TrafficLightApp extends StatelessWidget { // TrafficLightApp class
   @override // good practice to make sure method overrides superclass
     // Widget will structure and layout to the visual elements
     Widget build(BuildContext context) { // building block
-    return MaterialApp(
+    // MaterialApp sets up the application's structure
+     return MaterialApp( // the root widget for the application
       debugShowCheckedModeBanner: false, // to remove the debug banner
       title: 'Traffic Lights', // title of the application
       theme: ThemeData( // theme of application
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey), // color
       ),
+      // home property defines the application's home page
       home: TrafficModule(title: 'Traffic Lights'),
     );
   }
@@ -26,7 +27,7 @@ class TrafficLightApp extends StatelessWidget { // TrafficLightApp class
 
 // the homepage of application
 class TrafficModule extends StatefulWidget {
-  final String title;
+  final String title; // the title of application
 
   const TrafficModule({super.key, required this.title}); // constructor
 
@@ -39,6 +40,7 @@ class TrafficModule extends StatefulWidget {
 // the state of the homepage
 class _TrafficModuleState extends State<TrafficModule> {
   int _remainingTime = 10; // Initial time in seconds
+  // declare Timer class which can be null or active timer
   Timer? _timer;
 
   // the track which light is turned on
@@ -46,17 +48,19 @@ class _TrafficModuleState extends State<TrafficModule> {
 
   @override
   void initState() { // the initial state
-    super.initState();
-    startTimer();
+    super.initState(); // calls the parent class's initState()
+    startTimer(); // call the timer start function
   }
 
   void startTimer() { // start the timer and change the color
-    // timer period
+    // timer period of 1 second (constantly 1 second periods)
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      // the state of the lights depending on the time
       setState(() {
         if (_remainingTime > 0) { // time greater than 0
           _remainingTime--; // decrement by 1
         } else {
+          // when 0 change the light
           changeLight(); // call the function to change the light
         }
       });
@@ -65,8 +69,8 @@ class _TrafficModuleState extends State<TrafficModule> {
 
   void yellowTimer(int yORn) { // for the case of the yellow timer
     _timer?.cancel(); // cancel current time
-    _remainingTime = yORn;
-    startTimer();
+    _remainingTime = yORn; // set the new time depending on previous color
+    startTimer(); // call the timer function again
   }
 
   // Function to change light color
@@ -84,41 +88,41 @@ class _TrafficModuleState extends State<TrafficModule> {
   @override
   void dispose() { // function to clean up the widget
     _timer?.cancel(); // Cancel the timer to prevent memory leaks
-    super.dispose();
+    super.dispose(); // used to clean up, cancel timer
   }
 
   // the build the traffic light circles
   Widget lightCircle(Color dimColor, Color brightColor, bool isActive) {
     return Container(
-      width: 50.0,
-      height: 50.0,
+      width: 100.0, // width
+      height: 100.0, // height
       // margin adds space outside the widget's boundary (for neatness)
       margin: const EdgeInsets.symmetric(vertical: 15.0),
       decoration: BoxDecoration(
         // if is Active then brightColor else dimColor
         color: isActive ? brightColor : dimColor, // bright or dull color
-        shape: BoxShape.circle,
+        shape: BoxShape.circle, // circle lights
       ),
     );
   }
 
   Widget lightedCircle() {
     // basic structure for design
-    return Container(
-      width: 300,
+    return Container( // hold the three lights together
+      width: 400,
       height: 100,
       decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey, // color
+        borderRadius: BorderRadius.circular(12), // border
       ),
-      child: Row (
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row ( // place the three lights in a row (next to each other)
+        mainAxisAlignment: MainAxisAlignment.center, // center the three lights
         children: [
           // Red
-          lightCircle(
-            Color(0xFF5A0000),
-            Colors.red,
-            _currentLight == 1,
+          lightCircle( // call the previously made widget
+            Color(0xFF5A0000), // dull red (off)
+            Colors.red, // brighter red (on)
+            _currentLight == 1, // which index that would signal on
           ),
           const SizedBox(width: 15),
           // Yellow
@@ -134,7 +138,7 @@ class _TrafficModuleState extends State<TrafficModule> {
             Colors.green,
             _currentLight == 3
             ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 15), // to prevent overlapping of lights
         ],
     ),
     );
@@ -151,10 +155,10 @@ class _TrafficModuleState extends State<TrafficModule> {
           children: [ // more than one widget
             const SizedBox(height: 20), // display the time
             Text(
-              'Time Remaining: $_remainingTime seconds',
-                style: const TextStyle(fontSize: 20),
+              'Time Remaining: $_remainingTime seconds', // text
+                style: const TextStyle(fontSize: 20), // font
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // prevent overlapping
 
             // the traffic light module
             Container(
@@ -169,7 +173,7 @@ class _TrafficModuleState extends State<TrafficModule> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // prevent overlapping
 
           ],
         ),
