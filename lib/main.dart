@@ -102,8 +102,10 @@ class _TrafficModuleState extends State<TrafficModule> {
 
     void changeLight2() {
       setState(() { // the state
-        if (_currentLight == 1) { // yellow then 5 seconds
-          _currentLight2 = 3; // yes then 5
+        if (_currentLight == 1 && _remainingTime >= 5) {
+          _currentLight2 = 3;
+        } else if (_currentLight == 1 && _remainingTime < 5) {
+          _currentLight2 = 2;
         } else {
           _currentLight2 = 1;
         }
