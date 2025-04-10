@@ -46,7 +46,7 @@ class _TrafficModuleState extends State<TrafficModule> {
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
 
-  int _currentLight2 = 1; // 1 is red, 2 yellow, 3 green
+  int _currentLight2 = 3; // 1 is red, 2 yellow, 3 green
 
   // the sensors
   // false: no detection, default lights
@@ -96,6 +96,7 @@ class _TrafficModuleState extends State<TrafficModule> {
         } else { // if red or green the 10 seconds
           yellowTimer(10); // not yellow then
         }
+        changeLight2();
       });
     }
 
@@ -103,8 +104,6 @@ class _TrafficModuleState extends State<TrafficModule> {
       setState(() { // the state
         if (_currentLight == 1) { // yellow then 5 seconds
           _currentLight2 = 3; // yes then 5
-        } else if (_currentLight == 2) { // if red or green the 10 seconds
-          _currentLight2 = 1; // not yellow then
         } else {
           _currentLight2 = 1;
         }
