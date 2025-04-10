@@ -46,10 +46,6 @@ class _TrafficModuleState extends State<TrafficModule> {
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
 
-  int _remainingTime2 = 15; // Initial time in seconds
-  // declare Timer class which can be null or active timer
-  Timer? _timer2;
-
   int _currentLight2 = 1; // 1 is red, 2 yellow, 3 green
 
   // the sensors
@@ -65,7 +61,6 @@ class _TrafficModuleState extends State<TrafficModule> {
     // the initial state
     super.initState(); // calls the parent class's initState()
     startTimer(); // call the timer start function
-    startTimer2();
   }
 
   void startTimer() {
@@ -84,34 +79,11 @@ class _TrafficModuleState extends State<TrafficModule> {
     });
   }
 
-    void startTimer2() {
-      // start the timer and change the color
-      // timer period of 1 second (constantly 1 second periods)
-      _timer2 = Timer.periodic(const Duration(seconds: 1), (timer2) {
-        // the state of the lights depending on the time
-        setState(() {
-          if (_remainingTime2 > 0) { // time greater than 0
-            _remainingTime2--; // decrement by 1
-          } else {
-            // when 0 change the light
-            changeLight2(); // call the function to change the light
-          }
-        });
-      });
-  }
-
     void yellowTimer(int yORn) {
       // for the case of the yellow timer
       _timer?.cancel(); // cancel current time
       _remainingTime = yORn; // set the new time depending on previous color
       startTimer(); // call the timer function again
-    }
-
-    void yellowTimer2(int yORn) {
-      // for the case of the yellow timer
-      _timer2?.cancel(); // cancel current time
-      _remainingTime2 = yORn; // set the new time depending on previous color
-      startTimer2(); // call the timer function again
     }
 
     // Function to change light color
@@ -129,12 +101,12 @@ class _TrafficModuleState extends State<TrafficModule> {
 
     void changeLight2() {
       setState(() { // the state
-        _currentLight2 =
-            (_currentLight2 % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
-        if (_currentLight2 == 2) { // yellow then 5 seconds
-          yellowTimer2(5); // yes then 5
-        } else { // if red or green the 10 seconds
-          yellowTimer2(10); // not yellow then
+        if (_currentLight == 1) { // yellow then 5 seconds
+          _currentLight2 = 3; // yes then 5
+        } else if (_currentLight == 2) { // if red or green the 10 seconds
+          _currentLight2 = 1; // not yellow then
+        } else {
+          _currentLight2 = 1;
         }
       });
     }
@@ -143,7 +115,6 @@ class _TrafficModuleState extends State<TrafficModule> {
     void dispose() {
       // function to clean up the widget
       _timer?.cancel(); // Cancel the timer to prevent memory leaks
-      _timer2?.cancel();
       super.dispose(); // used to clean up, cancel timer
     }
 
@@ -161,20 +132,6 @@ class _TrafficModuleState extends State<TrafficModule> {
         ),
       );
     }
-
-  Widget lightCircle2(Color dimColor, Color brightColor, bool isActive) {
-    return Container(
-      width: 100.0, // width
-      height: 100.0, // height
-      // margin adds space outside the widget's boundary (for neatness)
-      margin: const EdgeInsets.symmetric(vertical: 15.0),
-      decoration: BoxDecoration(
-        // if is Active then brightColor else dimColor
-        color: isActive ? brightColor : dimColor, // bright or dull color
-        shape: BoxShape.circle, // circle lights
-      ),
-    );
-  }
 
     Widget lightedCircle() {
       // basic structure for design
@@ -235,21 +192,21 @@ class _TrafficModuleState extends State<TrafficModule> {
                 // center the three lights
                 children: [
                   // Red
-                  lightCircle2( // call the previously made widget
+                  lightCircle( // call the previously made widget
                     Color(0xFF5A0000), // dull red (off)
                     Colors.red, // brighter red (on)
                     _currentLight2 == 1, // which index that would signal on
                   ),
                   const SizedBox(width: 15),
                   // Yellow
-                  lightCircle2(
+                  lightCircle(
                     Color(0xFFA68B00),
                     Colors.yellow,
                     _currentLight2 == 2,
                   ),
                   const SizedBox(width: 15),
                   // Green
-                  lightCircle2(
+                  lightCircle(
                     Color(0xFF1B5E20),
                     Colors.green,
                     _currentLight2 == 3,
@@ -294,11 +251,8 @@ class _TrafficModuleState extends State<TrafficModule> {
                     ]
                 ),
               ),
-              Text(
-                'Time Remaining: $_remainingTime2 seconds', // text
-                style: const TextStyle(fontSize: 20), // font
-              ),
-              const SizedBox(height: 20), // prevent overlapping
+
+              const SizedBox(height: 20),
 
               // the traffic light module
               Container(
