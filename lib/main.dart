@@ -271,7 +271,7 @@ class _TrafficModuleState extends State<TrafficModule> {
           child: Column( // place one on top of another
             mainAxisAlignment: MainAxisAlignment.start, // alignment
             children: [ // more than one widget
-              const SizedBox(height: 20), // display the time
+              const SizedBox(height: 30), // display the time
               Text(
                 'Time Remaining: $_remainingTime seconds', // text
                 style: const TextStyle(fontSize: 20), // font
