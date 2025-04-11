@@ -1,0 +1,83 @@
+const http = require('http');
+const WebSocket = require('ws'); // Websocket
+const express = require('express'); 
+const { SerialPort } = require('serialport'); // Bridging the Arduino to server
+const { ReadlineParser } = require('@serialport/parser-readline');
+const readline = require('@serialport/parser-readline');
+const path = require('path');
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in defult 
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Broadcast to all connected clients
+function broadcast(state) {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(state);
+      }
+    });
+  }
+
+// Connect to the board (test needed)
+const port = new SerialPort({
+  path: '/dev/ttyACM0', // change to COM3 if using Windows
+  baudRate: 9600
+});
+
+const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
+
+// Open Websocket
+wss.on('connection', (socket) => {
+    console.log('Websocket connected');
+    socket.send(JSON.stringify(currentstate));
+
+    socket.on('close', () => {
+        console.log('WebSocket connection closed');
+    });
+});
+
+// Received currentstate from Arduino and broadcast to all clients (test needed)
+parser.on('data', (line) => {
+    const [state, secondsStr] = line.trim().toLowerCase().split(':');
+    const seconds = parseInt(secondsStr, 10);
+    if (["red", "yellow", "green"].includes(state)) {
+      currentstate = {state, seconds};  
+      broadcast(JSON.stringify(latestState));
+      console.log(`Arduino: ${state} (${seconds}s)`);
+    } else {
+      console.warn("error:", state); 
+      currentstate = { state: "red", seconds: 0 };
+      broadcast(JSON.stringify(currentstate));
+    }
+  });
+
+// Turn off the broadcast in case of connection error
+port.on('error', (err) => {
+  console.error("Serial port error:", err.message);
+  currentstate = "offline";
+  broadcast("offline");
+});
+
+server.listen(3000, () => {
+    console.log('Server Running at port port 3000') // 3000 is for web apps
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
