@@ -103,6 +103,8 @@ class _TrafficModuleState extends State<TrafficModule> {
         try {
           final decode = jsonDecode(data);
           _currentLight = decode["currentstate"];
+          // read currentstate2
+          // read timer
           setState(() { // the state
           _currentLight =
               (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
