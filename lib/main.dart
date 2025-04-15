@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart'; // import for user interface
 import 'dart:async'; // import for timer
+import 'package:web_socket_channel/web_socket_channel.dart'; // to connect to server
+import 'dart:convert'; // for json decoding
+
 
 void main() { // the main() is the start of everything
   runApp(const TrafficLightApp()); // call the application
@@ -38,9 +41,11 @@ class TrafficModule extends StatefulWidget {
 
 // the state of the homepage
 class _TrafficModuleState extends State<TrafficModule> {
+  // variable _channel (type: WebSocketChannel)
+  late WebSocketChannel _channel; // initialized later
   int _remainingTime = 10; // Initial time in seconds
   // declare Timer class which can be null or active timer
-  Timer? _timer;
+  Timer? _timer; // remove Timer for rest of app
 
 
   // the track which light is turned on
@@ -63,6 +68,7 @@ class _TrafficModuleState extends State<TrafficModule> {
     startTimer(); // call the timer start function
   }
 
+  // remove
   void startTimer() {
     // start the timer and change the color
     // timer period of 1 second (constantly 1 second periods)
@@ -81,22 +87,35 @@ class _TrafficModuleState extends State<TrafficModule> {
 
     void yellowTimer(int yORn) {
       // for the case of the yellow timer
-      _timer?.cancel(); // cancel current time
+      _timer?.cancel(); // cancel current time (remove)
       _remainingTime = yORn; // set the new time depending on previous color
       startTimer(); // call the timer function again
     }
 
     // Function to change light color
+
     void changeLight() {
-      setState(() { // the state
-        _currentLight =
-            (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
-        if (_currentLight == 2) { // yellow then 5 seconds
-          yellowTimer(5); // yes then 5
-        } else { // if red or green the 10 seconds
-          yellowTimer(10); // not yellow then
+      // communication with server
+      _channel = WebSocketChannel.connect(
+        Uri.parse('ws://172.22.144.99:3000'),
+      );
+      _channel.stream.listen((data) {
+        try {
+          final decode = jsonDecode(data);
+          _currentLight = decode["currentstate"];
+          setState(() { // the state
+          _currentLight =
+              (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
+          if (_currentLight == 2) { // yellow then 5 seconds
+            yellowTimer(5); // yes then 5
+          } else { // if red or green the 10 seconds
+            yellowTimer(10); // not yellow then
+          }
+          changeLight2();
+        });
+        } catch (e) {
+          changeLight();
         }
-        changeLight2();
       });
     }
 
