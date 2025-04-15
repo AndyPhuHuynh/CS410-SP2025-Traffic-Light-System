@@ -1,5 +1,6 @@
 uint8_t input_pin = 22;
 uint8_t pir_pin = 19;
+uint8_t pir_pin = 23;
 uint8_t green_pin = 18;
 uint8_t red_pin = 21;
 
