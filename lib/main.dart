@@ -65,7 +65,29 @@ class _TrafficModuleState extends State<TrafficModule> {
   void initState() {
     // the initial state
     super.initState(); // calls the parent class's initState()
-    startTimer(); // call the timer start function
+    // communication with server
+    _channel = WebSocketChannel.connect(
+      Uri.parse('ws://172.21.230.246:3000'),
+    );
+
+    // get data from server
+    _channel.stream.listen((data) {
+      try { // try-catch block
+        final decode = jsonDecode(data); // convert the data
+
+        // if the state in the server is red then the _currentLight is 1,
+        // if yellow then 2, if green then 3
+
+        // nested if-else then ternary statements
+        _currentLight = decode["state"] == 'red'
+        ? 1 : decode["state"] == 'yellow' ? 2 : 3;
+        // read state two
+        _remainingTime = decode["seconds"];
+        changeLight2(); // change the second lights based on the first lights
+      } catch (e) {
+        throw ("Error with message: $e");
+      }
+    });
   }
 
   // remove
@@ -95,29 +117,15 @@ class _TrafficModuleState extends State<TrafficModule> {
     // Function to change light color
 
     void changeLight() {
-      // communication with server
-      _channel = WebSocketChannel.connect(
-        Uri.parse('ws://172.22.144.99:3000'),
-      );
-      _channel.stream.listen((data) {
-        try {
-          final decode = jsonDecode(data);
-          _currentLight = decode["currentstate"];
-          // read currentstate2
-          _remainingTime = decode["seconds"];
-          setState(() { // the state
-          _currentLight =
-              (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
-          if (_currentLight == 2) { // yellow then 5 seconds
-            yellowTimer(5); // yes then 5
-          } else { // if red or green the 10 seconds
-            yellowTimer(10); // not yellow then
-          }
-          changeLight2();
-        });
-        } catch (e) {
-          changeLight();
+      setState(() { // the state
+        // _currentLight =
+        // (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
+        if (_currentLight == 2) { // yellow then 5 seconds
+          yellowTimer(5); // yes then 5
+        } else { // if red or green the 10 seconds
+          yellowTimer(10); // not yellow then
         }
+        changeLight2();
       });
     }
 

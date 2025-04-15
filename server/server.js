@@ -3,12 +3,12 @@ const WebSocket = require('ws'); // for Websocket communication
 const express = require('express'); // for web interface
 const { SerialPort } = require('serialport'); // Bridging the Arduino to server
 const { ReadlineParser } = require('@serialport/parser-readline'); // to read data from arduino
-const readline = require('@serialport/parser-readline');
+// const readline = require('@serialport/parser-readline');
 const path = require('path'); // pulling built-in path function
 const app = express();
 const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
-let read = { state: "red", seconds: 0 };// Traffic light stays red in default
+let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in default
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 
 
@@ -23,7 +23,7 @@ function broadcast(state) {
 
 // Connect to the board (test needed)
 const port = new SerialPort({
-  path: '/dev/ttyACM0', // change to COM3 if using Windows
+  path: 'COM3', // change to COM3 if using Windows
   baudRate: 9600
 });
 
@@ -41,8 +41,12 @@ wss.on('connection', (socket) => {
 
 // Received currentstate from Arduino and broadcast to all clients (test needed)
 parser.on('data', (line) => {
+
+    if (!line.includes(':')) return; // skip invalid
+
     const [state, secondsStr] = line.trim().toLowerCase().split(':');
     const seconds = parseInt(secondsStr, 10);
+
     if (["red", "yellow", "green"].includes(state)) {
       currentstate = {state, seconds};  
       broadcast(JSON.stringify(latestState));
@@ -61,8 +65,13 @@ port.on('error', (err) => {
   broadcast("offline");
 });
 
+// if connection is successful
+port.on('open', () => {
+    console.log('Serial port opened successfully.');
+});
+
 server.listen(3000, () => {
-    console.log('Server Running at port port 3000') // 3000 is for web apps
+    console.log('Server Running at port 3000') // 3000 is for web apps
 });
 
 
