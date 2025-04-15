@@ -1,15 +1,15 @@
-const http = require('http');
-const WebSocket = require('ws'); // Websocket
-const express = require('express'); 
+const http = require('http'); // build basic http server
+const WebSocket = require('ws'); // for Websocket communication
+const express = require('express'); // for web interface
 const { SerialPort } = require('serialport'); // Bridging the Arduino to server
-const { ReadlineParser } = require('@serialport/parser-readline');
+const { ReadlineParser } = require('@serialport/parser-readline'); // to read data from arduino
 const readline = require('@serialport/parser-readline');
-const path = require('path');
+const path = require('path'); // pulling built-in path function
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
-let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in defult 
-app.use(express.static(path.join(__dirname, 'public')));
+let read = { state: "red", seconds: 0 };// Traffic light stays red in default
+app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 
 
 // Broadcast to all connected clients
