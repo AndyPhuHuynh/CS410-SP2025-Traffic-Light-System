@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Traffic Light Status</title>
+  <style>
+    @font-face {
+    font-family: 'Digital7';
+    src: url('fonts/digital-7-mono.ttf') format('truetype');
+    } 
+
+    body {
+      font-family: sans-serif, 'Digital7', monospace;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #f4f4f4;
+    }
+
+    .countdown {
+      font-family: 'Digital7', monospace;
+      font-size: 160px;       
+      background: black;
+      display: inline-block;
+      padding: 30px 60px;
+      border-radius: 12px;
+      letter-spacing: 12px;
+      text-align: center;
+
+    }
+
+    .status {
+      font-family: 'Digital7', monospace;
+      font-size: 80px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .red {
+      font-family: 'Digital7', monospace;
+      color: red;
+      box-shadow: 0 0 20px red;
+    }
+
+    .green {
+      font-family: 'Digital7', monospace;
+      color: green;
+      box-shadow: 0 0 20px green;
+    }
+
+    .yellow {
+      font-family: 'Digital7', monospace;
+      color: goldenrod;
+      box-shadow: 0 0 20px goldenrod;
+    }
+
+    .offline {
+      font-family:'Digital7', monospace;
+      color: gray;
+      box-shadow: 0 0 20px gray;
+    }
+
+    .label {
+      font-family: sans-serif, 'Digital7', monospace;
+      font-size: 24px;
+      color: #444;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="label"></div>
+  <div id="status" class="status offline">OFFLINE</div>
+  <div id="countdown" class="countdown offline"> 00 </div>
+
+
+  <script>
+    const statusDiv = document.getElementById('status');
+    const countdownDiv = document.getElementById('countdown');
+    const socket = new WebSocket(`ws://${location.host}`);
+
+    socket.onmessage = (event) => {
+      let data;
+      try {
+      data = JSON.parse(event.data);
+      } catch {
+      data = { state: event.data, seconds: 0 };
+      }
+
+      const { state, seconds } = data;
+
+      if (state === "green") {
+        statusDiv.textContent = "🟢 GREEN";
+        statusDiv.className = "status green";
+        countdownDiv.className = "countdown green"
+      } else if (state === "yellow") {
+        statusDiv.textContent = "🟡 YELLOW";
+        statusDiv.className = "status yellow";
+        countdownDiv.className = "countdown yellow"
+      } else if (state === "red") {
+        statusDiv.textContent = "🔴 RED";
+        statusDiv.className = "status red";
+        countdownDiv.className = "countdown red"
+      } else {
+        statusDiv.textContent = "OFFLINE";
+        statusDiv.className = "status offline";
+        countdownDiv.className = "countdown offline"
+      }
+
+      const displaySeconds = seconds > 99 ? 99 : seconds;
+      countdownDiv.textContent = String(displaySeconds).padStart(2, '0');
+    };
+
+    socket.onclose = () => {
+      statusDiv.textContent = "DISCONNECTED";
+      statusDiv.className = "status offline";
+      countdownDiv.textContent = "00";
+    };
+  </script>
+
+</body>
+</html>
