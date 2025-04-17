@@ -1,71 +1,40 @@
-uint8_t input_pin = 22;
-uint8_t pir_pin = 19;
-uint8_t green_pin = 18;
-uint8_t red_pin = 21;
+#include "Devices.h"
+#include "Intersection.h"
 
-class TrafficLight {
-  uint8_t greenPin;
-  uint8_t yellowPin;
-  uint8_t redPin;
-public:
-  TrafficLight(uint8_t green, uint8_t yellow, uint8_t red) {
-    greenPin = green;
-    yellowPin = yellow;
-    redPin = red;
-  }
+// Line sensor pins
+uint8_t line_pin_1 = 22;
+uint8_t line_pin_2 = 23;
 
-  void setupPins() {
-    pinMode(greenPin, OUTPUT);
-    pinMode(yellowPin, OUTPUT);
-    pinMode(redPin, OUTPUT);
-  }
+// Pir sensor pins
+uint8_t pir_pin_1 = 27;
+uint8_t pir_pin_2 = 26;
 
-  void setGreenLight(uint8_t mode) {
-    digitalWrite(greenPin, mode);
-  }
+// Light 1 pins
+uint8_t green_pin_1 = 17;
+uint8_t yellow_pin_1 = 16;
+uint8_t red_pin_1 = 4;
 
-  void setYellowLight(uint8_t mode) {
-    digitalWrite(yellowPin, mode);
-  }
+// Light 2 pins
+uint8_t green_pin_2 = 21;
+uint8_t yellow_pin_2 = 19;
+uint8_t red_pin_2 = 18;
 
-  void setRedLight(uint8_t mode) {
-    digitalWrite(redPin, mode);
-  }
-};
-
-class Sensor {
-  uint8_t inputPin;
-public:
-  Sensor(uint8_t input) {
-    inputPin = input;
-  }
-
-  void setupPins() {
-    pinMode(inputPin, INPUT);
-  }
-
-  uint8_t read() {
-    return digitalRead(inputPin);
-  } 
-};
-
-TrafficLight light(green_pin, 0, red_pin);
-Sensor lineSensor(input_pin);
-Sensor pirSensor(pir_pin);
+Intersection *intersection;
 
 void setup() {
-  // put your setup code here, to run once:
-  // pinMode(output_pin, OUTPUT);
-  light.setupPins();
-  lineSensor.setupPins();
-  pirSensor.setupPins();
-  Serial.begin(9600);
+    Serial.begin(9600);
+    TrafficLight light1 = TrafficLight(green_pin_1, yellow_pin_1, red_pin_1);
+    TrafficLight light2 = TrafficLight(green_pin_2, yellow_pin_2, red_pin_2);
+
+    Sensor line1 = Sensor(line_pin_1);
+    Sensor line2 = Sensor(line_pin_2);
+
+    Sensor pir1 = Sensor(pir_pin_1);
+    Sensor pir2 = Sensor(pir_pin_2);
+
+    intersection = new Intersection(light1, light2, line1, line2, pir1, pir2); 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  light.setRedLight(lineSensor.read());
-  light.setGreenLight(pirSensor.read());
-  
-  delay(100);
+    intersection->update();
 }
