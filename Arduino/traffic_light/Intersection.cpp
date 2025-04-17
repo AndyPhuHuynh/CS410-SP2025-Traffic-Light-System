@@ -2,14 +2,16 @@
 
 #include <Arduino.h>
 
-Intersection::Intersection(TrafficLight light1, TrafficLight light2, Sensor pir1, Sensor pir2) 
-: m_light1(light1), m_light2(light2), m_pirSensor1(pir1), m_pirSensor2(pir2) {
+Intersection::Intersection(TrafficLight light1, TrafficLight light2, Sensor line1, Sensor line2, Sensor pirSensor1, Sensor pirSensor2) 
+: m_light1(light1), m_light2(light2), m_lineSensor1(line1), m_lineSensor2(line2), m_pirSensor1(pirSensor1), m_pirSensor2(pirSensor2) {
     light1.setOnlyGreen();
     light2.setOnlyRed();
     setState(IntersectionState::Light1Green);
+    m_sensorCooldown.start();
 }
 
 void Intersection::setState(IntersectionState state) {
+    endState(m_currentState);
     m_currentState = state;
     startState(m_currentState);
 }
@@ -60,6 +62,7 @@ void Intersection::startSwitchLight2ToGreen() {
 void Intersection::update() {
     m_light1.update();
     m_light2.update();
+    m_sensorCooldown.update();
 
     switch (m_currentState) {
         case IntersectionState::Light1Green:
@@ -78,13 +81,17 @@ void Intersection::update() {
 }
 
 void Intersection::updateLight1Green() {
-    if (m_pirSensor1.read() == HIGH) {
+    if (m_lineSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+        setState(IntersectionState::SwitchLight2ToGreen);
+    } else if (m_pirSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight2ToGreen);
     }
 }
 
 void Intersection::updateLight2Green() {
-    if (m_pirSensor2.read() == HIGH) {
+    if (m_lineSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+        setState(IntersectionState::SwitchLight1ToGreen);
+    } else if (m_pirSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight1ToGreen);
     }
 }
@@ -102,3 +109,39 @@ void Intersection::updateSwitchLight2ToGreen() {
         setState(IntersectionState::Light2Green);
     }
 }
+
+void Intersection::endState(IntersectionState state) {
+    switch (state) {
+        case IntersectionState::Light1Green:
+            endLight1Green();
+            break;
+        case IntersectionState::Light2Green:
+            endLight2Green();
+            break;
+        case IntersectionState::SwitchLight1ToGreen:
+            endSwitchLight1ToGreen();
+            break;
+        case IntersectionState::SwitchLight2ToGreen:
+            endSwitchLight2ToGreen();
+            break;
+    }
+}
+
+void Intersection::endLight1Green() {
+
+}
+
+void Intersection::endLight2Green() {
+
+}
+
+void Intersection::endSwitchLight1ToGreen() {
+    m_sensorCooldown.resetCountDown();
+    m_sensorCooldown.start();
+}
+
+void Intersection::endSwitchLight2ToGreen() {
+    m_sensorCooldown.resetCountDown();
+    m_sensorCooldown.start();
+}
+
