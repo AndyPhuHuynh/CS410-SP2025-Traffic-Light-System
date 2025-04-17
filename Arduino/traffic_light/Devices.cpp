@@ -3,6 +3,11 @@
 #include <Arduino.h>
 
 // Must be created in setup or loop, not global space
+TrafficLight::TrafficLight(uint8_t green, uint8_t yellow, uint8_t red) : TrafficLight(green, yellow, red, State::AllOff) {
+    
+}
+
+// Must be created in setup or loop, not global space
 TrafficLight::TrafficLight(uint8_t green, uint8_t yellow, uint8_t red, State state) {
     greenPin = green;
     yellowPin = yellow;
@@ -31,6 +36,12 @@ void TrafficLight::setRedLight(uint8_t mode) {
     digitalWrite(redPin, mode);
 }
 
+void TrafficLight::setAllOff() {
+    setGreenLight(LOW);
+    setYellowLight(LOW);
+    setRedLight(LOW);
+}
+
 void TrafficLight::setOnlyGreen() {
     setGreenLight(HIGH);
     setYellowLight(LOW);
@@ -56,6 +67,9 @@ void TrafficLight::setState(State state) {
 
 void TrafficLight::startState(State state) {
     switch (state) {
+        case State::AllOff:
+            startAllOff();
+            break;
         case State::ConstantGreen:
             startConstantGreen();
             break;
@@ -66,6 +80,10 @@ void TrafficLight::startState(State state) {
             startConstantRed();
             break;
     }
+}
+
+void TrafficLight::startAllOff() {
+    setAllOff();
 }
 
 void TrafficLight::startConstantGreen() {
@@ -88,6 +106,9 @@ void TrafficLight::startConstantRed() {
 
 void TrafficLight::update() {
     switch (currentState) {
+        case State::AllOff:
+            updateAllOff();
+            break;
         case State::ConstantGreen:
             updateConstantGreen();
             break;
@@ -98,6 +119,10 @@ void TrafficLight::update() {
             updateConstantRed();
             break;
     }
+}
+
+void TrafficLight::updateAllOff() {
+
 }
 
 void TrafficLight::updateConstantGreen() {

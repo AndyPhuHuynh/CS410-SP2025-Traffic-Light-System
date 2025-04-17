@@ -1,71 +1,30 @@
+#include "Devices.h"
+
 uint8_t input_pin = 22;
-uint8_t pir_pin = 19;
-uint8_t green_pin = 18;
-uint8_t red_pin = 21;
+uint8_t pir_pin = 30;
 
-class TrafficLight {
-  uint8_t greenPin;
-  uint8_t yellowPin;
-  uint8_t redPin;
-public:
-  TrafficLight(uint8_t green, uint8_t yellow, uint8_t red) {
-    greenPin = green;
-    yellowPin = yellow;
-    redPin = red;
-  }
+// Light 1 pins
+uint8_t green_pin_1 = 17;
+uint8_t yellow_pin_1 = 16;
+uint8_t red_pin_1 = 4;
 
-  void setupPins() {
-    pinMode(greenPin, OUTPUT);
-    pinMode(yellowPin, OUTPUT);
-    pinMode(redPin, OUTPUT);
-  }
+// Light 2 pins
+uint8_t green_pin_2 = 21;
+uint8_t yellow_pin_2 = 19;
+uint8_t red_pin_2 = 18;
 
-  void setGreenLight(uint8_t mode) {
-    digitalWrite(greenPin, mode);
-  }
+TrafficLight *light1;
+TrafficLight *light2;
 
-  void setYellowLight(uint8_t mode) {
-    digitalWrite(yellowPin, mode);
-  }
-
-  void setRedLight(uint8_t mode) {
-    digitalWrite(redPin, mode);
-  }
-};
-
-class Sensor {
-  uint8_t inputPin;
-public:
-  Sensor(uint8_t input) {
-    inputPin = input;
-  }
-
-  void setupPins() {
-    pinMode(inputPin, INPUT);
-  }
-
-  uint8_t read() {
-    return digitalRead(inputPin);
-  } 
-};
-
-TrafficLight light(green_pin, 0, red_pin);
-Sensor lineSensor(input_pin);
-Sensor pirSensor(pir_pin);
+Sensor *pir1;
 
 void setup() {
-  // put your setup code here, to run once:
-  // pinMode(output_pin, OUTPUT);
-  light.setupPins();
-  lineSensor.setupPins();
-  pirSensor.setupPins();
-  Serial.begin(9600);
+    Serial.begin(9600);
+    light1 = new TrafficLight(green_pin_1, yellow_pin_1, red_pin_1, State::ConstantGreen);
+    light2 = new TrafficLight(green_pin_2, yellow_pin_2, red_pin_2, State::GreenToRed);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  light.setRedLight(lineSensor.read());
-  light.setGreenLight(pirSensor.read());
-  
-  delay(100);
+    light1->update();
+    light2->update();
 }
