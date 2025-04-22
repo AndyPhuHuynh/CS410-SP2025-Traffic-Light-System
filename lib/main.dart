@@ -127,6 +127,14 @@ class _TrafficModuleState extends State<TrafficModule> {
               decoration: BoxDecoration(
                 color: Colors.grey, // color
                 borderRadius: BorderRadius.circular(12), // border
+                // to add dept
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
               ),
               child: Row( // place the three lights in a row (next to each other)
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -170,6 +178,13 @@ class _TrafficModuleState extends State<TrafficModule> {
               decoration: BoxDecoration(
                 color: Colors.grey, // color
                 borderRadius: BorderRadius.circular(12), // border
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
               ),
               child: Row( // place the three lights in a row (next to each other)
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -215,47 +230,19 @@ class _TrafficModuleState extends State<TrafficModule> {
               const SizedBox(height: 30), // display the time
               Text(
                 'Time Remaining: $_remainingTime seconds', // text
-                style: const TextStyle(fontSize: 20), // font
-              ),
-              const SizedBox(height: 20), // prevent overlapping
-
-              // the traffic light module
-              Container(
-                width: 400, // rectangle width
-                height: 120.0, // rectangle height
-                color: Colors.grey, // grey rectangle
-                child: Stack(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          lightedCircle(),
-                        ],
-                      ),
-                    ]
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orangeAccent,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // the traffic light module
-              Container(
-                width: 400, // rectangle width
-                height: 120.0, // rectangle height
-                color: Colors.grey, // grey rectangle
-                child: Stack(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          lightedCircle2(),
-                        ],
-                      ),
-                    ]
-                ),
-              ),
-              const SizedBox(height: 20), // prevent overlapping
-
+              // Traffic light 1
+              lightedCircle(),
+              const SizedBox(height: 20),
+              // Traffic light 2
+              lightedCircle2(),
+              const SizedBox(height: 20),
             ],
           ),
         ),
