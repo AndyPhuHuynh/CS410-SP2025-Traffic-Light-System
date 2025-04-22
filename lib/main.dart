@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart'; // import for user interface
-import 'dart:async'; // import for timer
 import 'package:web_socket_channel/web_socket_channel.dart'; // to connect to server
 import 'dart:convert'; // for json decoding
+import 'package:logger/logger.dart';
 
 
 void main() { // the main() is the start of everything
@@ -44,9 +44,6 @@ class _TrafficModuleState extends State<TrafficModule> {
   // variable _channel (type: WebSocketChannel)
   late WebSocketChannel _channel; // initialized later
   int _remainingTime = 10; // Initial time in seconds
-  // declare Timer class which can be null or active timer
-  Timer? _timer; // remove Timer for rest of app
-
 
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
@@ -61,82 +58,47 @@ class _TrafficModuleState extends State<TrafficModule> {
   // add functions if active
   // add functions to send to output
 
+  var logger = Logger();
+
   @override
   void initState() {
     // the initial state
     super.initState(); // calls the parent class's initState()
-    startTimer(); // call the timer start function
-  }
+    // communication with server
+    _channel = WebSocketChannel.connect( // WebSocket communication
+      Uri.parse('ws://172.22.144.99:3000'), // ip address, port
+    );
+    _channel.stream.listen((data) { // read add data
+      try {
+        final decoded = jsonDecode(data); // decode the data and hold
+        String light1 = decoded["light1"]; // take section from data
+        String light2 = decoded["light2"]; // again
+        int time = decoded["countdown"]; // get the countdown
 
-  // remove
-  void startTimer() {
-    // start the timer and change the color
-    // timer period of 1 second (constantly 1 second periods)
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // the state of the lights depending on the time
-      setState(() {
-        if (_remainingTime > 0) { // time greater than 0
-          _remainingTime--; // decrement by 1
-        } else {
-          // when 0 change the light
-          changeLight(); // call the function to change the light
-        }
-      });
+        setState(() {
+          _remainingTime = time;
+          _currentLight = lightColorNum(light1);
+          _currentLight2 = lightColorNum(light2);
+        });
+      } catch (e) {
+        logger.e("Error parsing data: $e");
+      }
     });
   }
 
-    void yellowTimer(int yORn) {
-      // for the case of the yellow timer
-      _timer?.cancel(); // cancel current time (remove)
-      _remainingTime = yORn; // set the new time depending on previous color
-      startTimer(); // call the timer function again
-    }
-
-    // Function to change light color
-
-    void changeLight() {
-      // communication with server
-      _channel = WebSocketChannel.connect(
-        Uri.parse('ws://172.22.144.99:3000'),
-      );
-      _channel.stream.listen((data) {
-        try {
-          final decode = jsonDecode(data);
-          _currentLight = decode["currentstate"];
-          // read currentstate2
-          // read timer
-          setState(() { // the state
-          _currentLight =
-              (_currentLight % 3) + 1; // runs from 1 > 2 > 3 > 1 > etc
-          if (_currentLight == 2) { // yellow then 5 seconds
-            yellowTimer(5); // yes then 5
-          } else { // if red or green the 10 seconds
-            yellowTimer(10); // not yellow then
-          }
-          changeLight2();
-        });
-        } catch (e) {
-          changeLight();
-        }
-      });
-    }
-
-    void changeLight2() {
-      setState(() { // the state
-        if (_currentLight == 1 && _remainingTime >= 5) {
-          _currentLight2 = 3;
-        } else if (_currentLight == 1 && _remainingTime < 5) {
-          _currentLight2 = 2;
-        } else {
-          _currentLight2 = 1;
-        }
-      });
+  int lightColorNum(String color) {
+      switch (color) {
+        case "red": return 1;
+        case "yellow": return 2;
+        case "green": return 3;
+        default: return 1;
+      }
     }
 
     @override
     void dispose() {
       // function to clean up the widget
-      _timer?.cancel(); // Cancel the timer to prevent memory leaks
+      _channel.sink.close();
       super.dispose(); // used to clean up, cancel timer
     }
 

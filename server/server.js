@@ -41,28 +41,29 @@ wss.on('connection', (socket) => {
 
 // Received currentstate from Arduino and broadcast to all clients (test needed)
 parser.on('data', (line) => {
-    const [state, secondsStr] = line.trim().toLowerCase().split(':');
-    const seconds = parseInt(secondsStr, 10);
-    if (["red", "yellow", "green"].includes(state)) {
-      currentstate = {state, seconds};  
-      broadcast(JSON.stringify(latestState));
-      console.log(`Arduino: ${state} (${seconds}s)`);
-    } else {
-      console.warn("error:", state); 
-      currentstate = { state: "red", seconds: 0 };
-      broadcast(JSON.stringify(currentstate));
+    try {
+        const [state, secondsStr] = line.trim().toLowerCase().split(':');
+        const seconds = parseInt(secondsStr, 10);
+        if (["red", "yellow", "green"].includes(state)) {
+        currentstate = {state, seconds};
+        broadcast(JSON.stringify(currentstate));
+        console.log(`Arduino: ${state} (${seconds}s)`);
+        } else {
+        console.warn("error:", state);
+        currentstate = { state: "red", seconds: 0 };
+        broadcast(JSON.stringify(currentstate));
+        }
+    } catch (err) {
+        console.error("Serial port error:", err.message);
+        currentstate = "offline";
+        broadcast("offline");
     }
   });
 
 // Turn off the broadcast in case of connection error
-port.on('error', (err) => {
-  console.error("Serial port error:", err.message);
-  currentstate = "offline";
-  broadcast("offline");
-});
 
 server.listen(3000, () => {
-    console.log('Server Running at port port 3000') // 3000 is for web apps
+    console.log('Server Running at port 3000') // 3000 is for web apps
 });
 
 

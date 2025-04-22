@@ -51,3 +51,11 @@ public:
     void endSwitchLight1ToGreen();
     void endSwitchLight2ToGreen();
 };
+
+//
+String Intersection::getStateJSON() {
+    json += this->light1.getStateString() + ", ";
+    json += this->light2.getStateString() + ", ";
+    json += String(this->getCountdown()) + "; ";
+    return json;
+}

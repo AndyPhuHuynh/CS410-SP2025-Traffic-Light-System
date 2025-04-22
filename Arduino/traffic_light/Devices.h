@@ -56,6 +56,14 @@ public:
     void updateConstantGreen();
     void updateGreenToRed();
     void updateConstantRed();
+
+    String getStateString() {
+        if (this->isRed()) return "red";
+        if (this->isYellow()) return "yellow";
+        if (this->isGreen()) return "green";
+        return "off";
+    }
+
 };
 
 class Sensor {
