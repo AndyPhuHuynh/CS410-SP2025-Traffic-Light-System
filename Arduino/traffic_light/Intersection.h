@@ -50,12 +50,12 @@ public:
     void endLight2Green();
     void endSwitchLight1ToGreen();
     void endSwitchLight2ToGreen();
-};
 
-//
-String Intersection::getStateJSON() {
-    json += this->light1.getStateString() + ", ";
-    json += this->light2.getStateString() + ", ";
-    json += String(this->getCountdown()) + "; ";
-    return json;
-}
+    // function to get get the colors of light 1 and light 2
+    String getStateJSON() {
+        json = this->light1.getStateString() + ", ";
+        json += this->light2.getStateString() + ", ";
+        json += String(this->getCountdown()) + "; ";
+        return json;
+    }
+};
