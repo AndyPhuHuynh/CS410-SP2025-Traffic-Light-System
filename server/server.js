@@ -23,7 +23,7 @@ function broadcast(state) {
 
 // Connect to the board (test needed)
 const port = new SerialPort({
-  path: '/dev/ttyACM0', // change to COM3 if using Windows
+  path: 'COM3', // change to COM3 if using Windows
   baudRate: 9600
 });
 
@@ -39,26 +39,48 @@ wss.on('connection', (socket) => {
     });
 });
 
+// // Received currentstate from Arduino and broadcast to all clients (test needed)
+// parser.on('data', (line) => {
+//     try {
+//         const [state, secondsStr] = line.trim().toLowerCase().split(':');
+//         const seconds = parseInt(secondsStr, 10);
+//         if (["red", "yellow", "green"].includes(state)) {
+//         currentstate = {state, seconds};
+//         broadcast(JSON.stringify(currentstate));
+//         console.log(`Arduino: ${state} (${seconds}s)`);
+//         } else {
+//         console.warn("error:", state);
+//         currentstate = { state: "red", seconds: 0 };
+//         broadcast(JSON.stringify(currentstate));
+//         }
+//     } catch (err) {
+//         console.error("Serial port error:", err.message);
+//         currentstate = "offline";
+//         broadcast("offline");
+//     }
+//   });
+
 // Received currentstate from Arduino and broadcast to all clients (test needed)
 parser.on('data', (line) => {
-    try {
-        const [state, secondsStr] = line.trim().toLowerCase().split(':');
-        const seconds = parseInt(secondsStr, 10);
-        if (["red", "yellow", "green"].includes(state)) {
-        currentstate = {state, seconds};
-        broadcast(JSON.stringify(currentstate));
-        console.log(`Arduino: ${state} (${seconds}s)`);
-        } else {
-        console.warn("error:", state);
-        currentstate = { state: "red", seconds: 0 };
-        broadcast(JSON.stringify(currentstate));
-        }
-    } catch (err) {
-        console.error("Serial port error:", err.message);
-        currentstate = "offline";
-        broadcast("offline");
-    }
-  });
+  const [state, secondsStr] = line.trim().toLowerCase().split(':');
+  const seconds = parseInt(secondsStr, 10);
+  if (["red", "yellow", "green"].includes(state)) {
+    currentstate = {state, seconds};  
+    broadcast(JSON.stringify(latestState));
+    console.log(`Arduino: ${state} (${seconds}s)`);
+  } else {
+    console.warn("error:", state); 
+    currentstate = { state: "red", seconds: 0 };
+    broadcast(JSON.stringify(currentstate));
+  }
+});
+
+// Turn off the broadcast in case of connection error
+port.on('error', (err) => {
+console.error("Serial port error:", err.message);
+currentstate = "offline";
+broadcast("offline");
+});
 
 // Turn off the broadcast in case of connection error
 

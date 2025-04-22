@@ -26,14 +26,17 @@ void TrafficLight::setupPins() {
 
 void TrafficLight::setGreenLight(uint8_t mode) {
     digitalWrite(greenPin, mode);
+    m_isGreen = mode == HIGH;
 }
 
 void TrafficLight::setYellowLight(uint8_t mode) {
     digitalWrite(yellowPin, mode);
+    m_isYellow = mode == HIGH;
 }
 
 void TrafficLight::setRedLight(uint8_t mode) {
     digitalWrite(redPin, mode);
+    m_isRed = mode == HIGH;
 }
 
 void TrafficLight::setAllOff() {

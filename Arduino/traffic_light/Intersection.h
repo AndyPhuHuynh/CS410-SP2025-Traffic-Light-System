@@ -1,5 +1,7 @@
 #include "Devices.h"
 
+#include <string>
+
 enum class IntersectionState {
     Light1Green,
     Light2Green,
@@ -52,10 +54,11 @@ public:
     void endSwitchLight2ToGreen();
 
     // function to get get the colors of light 1 and light 2
-    String getStateJSON() {
-        json = this->light1.getStateString() + ", ";
-        json += this->light2.getStateString() + ", ";
-        json += String(this->getCountdown()) + "; ";
+    std::string getStateJSON() {
+        std::string json;
+        json = m_light1.getStateString() + ", ";
+        json += m_light2.getStateString() + ", ";
+        json += std::to_string(timer1.getTimeSeconds()) + "; ";
         return json;
     }
 };
