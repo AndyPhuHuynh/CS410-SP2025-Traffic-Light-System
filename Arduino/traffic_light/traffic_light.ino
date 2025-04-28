@@ -52,7 +52,7 @@ void setup() {
     Serial.println(WiFi.localIP());
     // WebSocket setup
     webSocket.begin(websocket_host, websocket_port, websocket_path);
-    // webSocket.onEvent(webSocketEvent);  // optional: handle incoming messages
+    webSocket.onEvent(webSocketEvent);  // optional: handle incoming messages
     webSocket.setReconnectInterval(5000); // try reconnecting every 5s
 
     TrafficLight light1 = TrafficLight(green_pin_1, yellow_pin_1, red_pin_1);
@@ -77,5 +77,5 @@ void loop() {
     std::string stateColor = intersection->getStateJSON();
     webSocket.sendTXT(stateColor.c_str());
 
-    delay(100); // small delay
+    delay(100); // small delay (100ms)
 }
