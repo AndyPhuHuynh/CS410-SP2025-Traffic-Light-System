@@ -54,11 +54,13 @@ public:
     void endSwitchLight2ToGreen();
 
     // function to get get the colors of light 1 and light 2
-    std::string getStateJSON() {
-        std::string json;
-        json = m_light1.getStateString() + ", ";
-        json += m_light2.getStateString() + ", ";
-        json += std::to_string(timer1.getTimeSeconds()) + "; ";
-        return json;
+    std::string Intersection::getStateJSON() {
+        String state = "{\"light1\": {\"green\": " + String(light1.isGreen()) +
+                       ", \"yellow\": " + String(light1.isYellow()) +
+                       ", \"red\": " + String(light1.isRed()) + "}, " +
+                       "\"light2\": {\"green\": " + String(light2.isGreen()) +
+                       ", \"yellow\": " + String(light2.isYellow()) +
+                       ", \"red\": " + String(light2.isRed()) + "}}";
+        return state.c_str();
     }
 };

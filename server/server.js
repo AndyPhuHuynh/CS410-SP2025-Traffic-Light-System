@@ -12,20 +12,11 @@ let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in de
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 
 
-// Broadcast to all connected clients
-function broadcast(state) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(state);
-      }
-    });
-  }
-
 // Connect to the board (test needed)
-/* const port = new SerialPort({
+const port = new SerialPort({
   path: 'COM3', // change to COM3 if using Windows
   baudRate: 9600
-}); */
+});
 
 function broadcast(state) {
   const data = typeof state === 'string' ? state : JSON.stringify(state);
@@ -63,12 +54,12 @@ wss.on('connection', (socket) => {
 });
 
 // Received currentstate from Arduino and broadcast to all clients (test needed)
-/* parser.on('data', (line) => {
+ parser.on('data', (line) => {
   const [state, secondsStr] = line.trim().toLowerCase().split(':');
   const seconds = parseInt(secondsStr, 10);
   if (["red", "yellow", "green"].includes(state)) {
     currentstate = {state, seconds};  
-    broadcast(JSON.stringify(latestState));
+    broadcast(JSON.stringify(currentstate));
     console.log(`Arduino: ${state} (${seconds}s)`);
   } else {
     console.warn("error:", state); 
@@ -82,7 +73,7 @@ port.on('error', (err) => {
     console.error("Serial port error:", err.message);
     currentstate = "offline";
     broadcast("offline");
-}); */
+});
 
 // Turn off the broadcast in case of connection error
 
