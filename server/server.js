@@ -8,7 +8,7 @@ const path = require('path'); // pulling built-in path function
 const app = express();
 const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
-let read = { state: "red", seconds: 0 };// Traffic light stays red in default
+let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in default
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 
 
@@ -77,9 +77,9 @@ parser.on('data', (line) => {
 
 // Turn off the broadcast in case of connection error
 port.on('error', (err) => {
-console.error("Serial port error:", err.message);
-currentstate = "offline";
-broadcast("offline");
+    console.error("Serial port error:", err.message);
+    currentstate = "offline";
+    broadcast("offline");
 });
 
 // Turn off the broadcast in case of connection error
