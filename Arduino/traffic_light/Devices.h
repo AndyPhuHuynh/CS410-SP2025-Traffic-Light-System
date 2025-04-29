@@ -69,6 +69,17 @@ public:
         return "off";
     }
 
+    bool isGreen() {
+        return m_isGreen;
+    }
+
+    bool isYellow() {
+        return m_isYellow;
+    }
+
+    bool isRed() {
+        return m_isRed;
+    }
 };
 
 class Sensor {

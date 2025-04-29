@@ -28,12 +28,12 @@ Intersection *intersection;
 
 // Websocket connections
 
-const char* ssid = "iPhone (122)";
-const char* password = "password";
+const char* ssid = "UMB-Guest";
+const char* password = "UMBIT@YourServiceDesk";
 
-const char* websocket_host = "172.56.219.137";
-const uint16_t websocket_port = 8080;             
-const char* websocket_path = "";             
+const char* websocket_host = "158.121.180.60";
+const uint16_t websocket_port = 3000;             
+const char* websocket_path = "ws";             
 
 WebSocketsClient webSocket;
 
@@ -87,12 +87,14 @@ void setup() {
 }
 
 void loop() {
+    webSocket.loop();
+    intersection->update();
 
     if (webSocket.isConnected()) {
-        webSocket.sendTXT(stateColor.c_str());
+        std::string state = intersection->getStateJSON();
+        webSocket.sendTXT(state.c_str());
     } else {
-        Serial.println("WebSocket not connected. Attempting to reconnect...");
-        webSocket.begin(websocket_host, websocket_port, websocket_path); // Reconnect
+        // Serial.println("WebSocket not connected. Attempting to reconnect...");
     }
 
     delay(100); // small delay (100ms)
