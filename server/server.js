@@ -21,8 +21,8 @@ function broadcast(state) {
     });
   }
 
-// WIFI Connection to the Board 
-const port = net.createConnection({ host: '0.0.0.0', port: 5000 }, () => {
+// WIFI Connection to the Board
+const port = net.createConnection({ host: '172.20.10.8', port: 5000 }, () => {
     console.log('Connected to Arduino');
   });
     port.on('data', (data) => {
