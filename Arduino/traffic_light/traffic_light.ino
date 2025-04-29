@@ -37,6 +37,25 @@ const char* websocket_path = "";
 
 WebSocketsClient webSocket;
 
+void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
+    switch(type) {
+        case WStype_DISCONNECTED:
+            Serial.println("Disconnected from WebSocket.");
+            break;
+        case WStype_CONNECTED:
+            Serial.println("Connected to WebSocket.");
+            break;
+        case WStype_TEXT:
+            Serial.printf("Received message: %s\n", payload);
+            break;
+        case WStype_ERROR:
+            Serial.println("WebSocket error.");
+            break;
+        default:
+            break;
+    }
+};
+
 void setup() {
     Serial.begin(115200);
 
@@ -52,7 +71,7 @@ void setup() {
     Serial.println(WiFi.localIP());
     // WebSocket setup
     webSocket.begin(websocket_host, websocket_port, websocket_path);
-    // webSocket.onEvent(webSocketEvent);  // optional: handle incoming messages
+    webSocket.onEvent(webSocketEvent);  // optional: handle incoming messages
     webSocket.setReconnectInterval(5000); // try reconnecting every 5s
 
     TrafficLight light1 = TrafficLight(green_pin_1, yellow_pin_1, red_pin_1);
@@ -69,13 +88,12 @@ void setup() {
 
 void loop() {
 
-    webSocket.loop(); // WebSocket communication
+    if (webSocket.isConnected()) {
+        webSocket.sendTXT(stateColor.c_str());
+    } else {
+        Serial.println("WebSocket not connected. Attempting to reconnect...");
+        webSocket.begin(websocket_host, websocket_port, websocket_path); // Reconnect
+    }
 
-    intersection->update();
-
-    // get the state of the lights and send to the server
-    std::string stateColor = intersection->getStateJSON();
-    webSocket.sendTXT(stateColor.c_str());
-
-    delay(100); // small delay
+    delay(100); // small delay (100ms)
 }

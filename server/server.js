@@ -8,24 +8,24 @@ const path = require('path'); // pulling built-in path function
 const app = express();
 const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
-let read = { state: "red", seconds: 0 };// Traffic light stays red in default
+let currentstate = { state: "red", seconds: 0 };// Traffic light stays red in default
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 
-
-// Broadcast to all connected clients
-function broadcast(state) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(state);
-      }
-    });
-  }
 
 // Connect to the board (test needed)
 const port = new SerialPort({
   path: 'COM3', // change to COM3 if using Windows
   baudRate: 9600
 });
+
+function broadcast(state) {
+  const data = typeof state === 'string' ? state : JSON.stringify(state);
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  });
+}
 
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
@@ -34,39 +34,32 @@ wss.on('connection', (socket) => {
     console.log('Websocket connected');
     socket.send(JSON.stringify(currentstate));
 
+    socket.on('message', (message) => {
+        console.log('Received from client:', message.toString());
+
+        try {
+            const data = JSON.parse(message.toString());
+            if (data.light1 && data.light2 && typeof data.countdown === 'number') {
+            currentstate = data;
+            broadcast(currentstate); // Broadcast to others
+            }
+        } catch (e) {
+            console.error('Invalid JSON received:', e.message);
+        }
+    });
+
     socket.on('close', () => {
         console.log('WebSocket connection closed');
     });
 });
 
-// // Received currentstate from Arduino and broadcast to all clients (test needed)
-// parser.on('data', (line) => {
-//     try {
-//         const [state, secondsStr] = line.trim().toLowerCase().split(':');
-//         const seconds = parseInt(secondsStr, 10);
-//         if (["red", "yellow", "green"].includes(state)) {
-//         currentstate = {state, seconds};
-//         broadcast(JSON.stringify(currentstate));
-//         console.log(`Arduino: ${state} (${seconds}s)`);
-//         } else {
-//         console.warn("error:", state);
-//         currentstate = { state: "red", seconds: 0 };
-//         broadcast(JSON.stringify(currentstate));
-//         }
-//     } catch (err) {
-//         console.error("Serial port error:", err.message);
-//         currentstate = "offline";
-//         broadcast("offline");
-//     }
-//   });
-
 // Received currentstate from Arduino and broadcast to all clients (test needed)
-parser.on('data', (line) => {
+ parser.on('data', (line) => {
   const [state, secondsStr] = line.trim().toLowerCase().split(':');
   const seconds = parseInt(secondsStr, 10);
   if (["red", "yellow", "green"].includes(state)) {
     currentstate = {state, seconds};  
-    broadcast(JSON.stringify(latestState));
+    broadcast(JSON.stringify(currentstate));
     console.log(`Arduino: ${state} (${seconds}s)`);
   } else {
     console.warn("error:", state); 
@@ -77,9 +70,9 @@ parser.on('data', (line) => {
 
 // Turn off the broadcast in case of connection error
 port.on('error', (err) => {
-console.error("Serial port error:", err.message);
-currentstate = "offline";
-broadcast("offline");
+    console.error("Serial port error:", err.message);
+    currentstate = "offline";
+    broadcast("offline");
 });
 
 // Turn off the broadcast in case of connection error

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart'; // import for user interface
 import 'package:web_socket_channel/web_socket_channel.dart'; // to connect to server
 import 'dart:convert'; // for json decoding
 import 'package:logger/logger.dart';
+import 'dart:async'; // for timer
 
 
 void main() { // the main() is the start of everything
@@ -60,6 +61,24 @@ class _TrafficModuleState extends State<TrafficModule> {
 
   var logger = Logger();
 
+  void showConnectionError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Connection error: Unable to reach server.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void showConnectionClosed() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Connection closed by server.'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
   @override
   void initState() {
     // the initial state
@@ -68,22 +87,45 @@ class _TrafficModuleState extends State<TrafficModule> {
     _channel = WebSocketChannel.connect( // WebSocket communication
       Uri.parse('ws://172.22.144.99:3000'), // ip address, port
     );
-    _channel.stream.listen((data) { // read add data
-      try {
-        final decoded = jsonDecode(data); // decode the data and hold
-        String light1 = decoded["light1"]; // take section from data
-        String light2 = decoded["light2"]; // again
-        int time = decoded["countdown"]; // get the countdown
 
-        setState(() {
-          _remainingTime = time;
-          _currentLight = lightColorNum(light1);
-          _currentLight2 = lightColorNum(light2);
-        });
-      } catch (e) {
-        logger.e("Error parsing data: $e");
-      }
+    // timeout timer
+    Timer timeoutTimer = Timer(const Duration(seconds: 5), () {
+      logger.e('Connection timeout: No response from server.');
+      showConnectionError();
+      _channel.sink.close();
     });
+
+    _channel.stream.listen(
+            (data) { // read add data
+
+              if (timeoutTimer.isActive) {
+                timeoutTimer.cancel();
+              }
+
+              try {
+                final decoded = jsonDecode(data); // decode the data and hold
+                String light1 = decoded["light1"]; // take section from data
+                String light2 = decoded["light2"]; // again
+                int time = decoded["countdown"]; // get the countdown
+
+                setState(() {
+                  _remainingTime = time;
+                  _currentLight = lightColorNum(light1);
+                  _currentLight2 = lightColorNum(light2);
+                });
+              } catch (e) {
+                logger.e('JSON decode error: $e');
+              }
+            },
+      onError: (error) {
+        logger.e('WebSocket error: $error');
+        showConnectionError();
+      },
+      onDone: () {
+        logger.w('WebSocket connection closed.');
+        showConnectionClosed();
+      },
+    );
   }
 
   int lightColorNum(String color) {
