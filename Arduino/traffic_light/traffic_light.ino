@@ -32,7 +32,7 @@ const char* ssid = "iPhone (122)";
 const char* password = "password";
 
 const char* websocket_host = "172.56.219.137";
-const uint16_t websocket_port = 3000;             
+const uint16_t websocket_port = 8080;             
 const char* websocket_path = "";             
 
 WebSocketsClient webSocket;
