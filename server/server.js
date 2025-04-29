@@ -10,7 +10,7 @@ const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
 let read = { state: "red", seconds: 0 };// Traffic light stays red in default
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
-
+const net = require('net');
 
 // Broadcast to all connected clients
 function broadcast(state) {
@@ -21,11 +21,13 @@ function broadcast(state) {
     });
   }
 
-// Connect to the board (test needed)
-const port = new SerialPort({
-  path: '/dev/ttyACM0', // change to COM3 if using Windows
-  baudRate: 9600
-});
+// WIFI Connection to the Board 
+const port = net.createConnection({ host: '172.20.10.8', port: 5000 }, () => {
+    console.log('Connected to Arduino');
+  });
+    port.on('data', (data) => {
+      console.log('Received:', data.toString());
+    });
 
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
@@ -61,8 +63,8 @@ port.on('error', (err) => {
   broadcast("offline");
 });
 
-server.listen(3000, () => {
-    console.log('Server Running at port port 3000') // 3000 is for web apps
+server.listen(5000, () => {
+    console.log('Server Running at port port 8080') // 
 });
 
 
