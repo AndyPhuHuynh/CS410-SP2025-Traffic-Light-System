@@ -1,70 +1,87 @@
 const http = require('http'); // build basic http server
 const WebSocket = require('ws'); // for Websocket communication
 const express = require('express'); // for web interface
-const { SerialPort } = require('serialport'); // Bridging the Arduino to server
 const { ReadlineParser } = require('@serialport/parser-readline'); // to read data from arduino
-const readline = require('@serialport/parser-readline');
 const path = require('path'); // pulling built-in path function
 const app = express();
 const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
-let read = { state: "red", seconds: 0 };// Traffic light stays red in default
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
 const net = require('net');
 
+// State of the traffic lights
+let trafficLights = {
+    light1: { color: "red", timer: 0 },
+    light2: { color: "red", timer: 0 }
+}
+
+
 // Broadcast to all connected clients
-function broadcast(state) {
+function broadcast() {
+    let msgToSend = JSON.stringify(trafficLights);
     wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(state);
-      }
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(msgToSend);
+        }
     });
-  }
+}
 
-// WIFI Connection to the Board 
-const port = net.createConnection({ host: '0.0.0.0', port: 5000 }, () => {
-    console.log('Connected to Arduino');
-  });
-    port.on('data', (data) => {
-      console.log('Received:', data.toString());
-    });
 
-const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
+// Handle websocket connections
+wss.on("connection", (ws) => {
+    console.log("WebSocket client connected");
 
-// Open Websocket
-wss.on('connection', (socket) => {
-    console.log('Websocket connected');
-    socket.send(JSON.stringify(currentstate));
+    ws.send(JSON.stringify(trafficLights));
 
-    socket.on('close', () => {
-        console.log('WebSocket connection closed');
-    });
-});
-
-// Received currentstate from Arduino and broadcast to all clients (test needed)
-parser.on('data', (line) => {
-    const [state, secondsStr] = line.trim().toLowerCase().split(':');
-    const seconds = parseInt(secondsStr, 10);
-    if (["red", "yellow", "green"].includes(state)) {
-      currentstate = {state, seconds};  
-      broadcast(JSON.stringify(latestState));
-      console.log(`Arduino: ${state} (${seconds}s)`);
-    } else {
-      console.warn("error:", state); 
-      currentstate = { state: "red", seconds: 0 };
-      broadcast(JSON.stringify(currentstate));
+    /* Message should be in the form of:
+    {
+        light: "light1",
+        color: "red",
+        timer: 0
     }
-  });
+    */
+    ws.on("message", (message) => {
+        try {
+            const data = JSON.parse(message);
+            const { light, color, timer } = data;
 
-// Turn off the broadcast in case of connection error
-port.on('error', (err) => {
-  console.error("Serial port error:", err.message);
-  currentstate = "offline";
-  broadcast("offline");
-});
+            // Check if the light is valid
+            if (!["light1", "light2"].includes(light)) {
+                console.warn("Invalid light: ", light);
+                return;
+            }
 
-server.listen(5000, '0.0.0.0', () => {
-  console.log('Server running at http://0.0.0.0:5000');
+            // Check if color is valid
+            if (!["green", "yellow", "red"].includes(color)) {
+                console.warn("Invalid color: ", color);
+                return;
+            }
+
+            // Check if timer is valid
+            if (isNaN(Number(timer))) {
+                console.warn("Invalid timer amount: ", timer);
+                return;
+            }
+
+            // Set the data
+            let newTimer = Math.ceil(Number(timer));
+            trafficLights[light] = { color, newTimer };
+            broadcast();
+
+        } catch (err) {
+            console.log("Error parsing message: ", err.message);
+        }
+    });
+
+    ws.on("close", () => {
+        console.log("WebSocket client disconnected");
+    })
+})
+
+
+// Start the server
+server.listen(5000, () => {
+    console.log('Server running at port 5000');
 }).on('error', (err) => {
-  console.error('Error occurred while starting the server:', err);
+    console.error('Error occurred while starting the server:', err);
 });
