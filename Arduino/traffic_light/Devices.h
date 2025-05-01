@@ -62,12 +62,7 @@ public:
     void updateGreenToRed();
     void updateConstantRed();
 
-    std::string getStateString() {
-        if (m_isRed) return "red";
-        if (m_isYellow) return "yellow";
-        if (m_isGreen) return "green";
-        return "off";
-    }
+    std::string getJson();
 
     bool isGreen() {
         return m_isGreen;

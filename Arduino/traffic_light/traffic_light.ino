@@ -28,12 +28,12 @@ Intersection *intersection;
 
 // Websocket connections
 
-const char* ssid = "UMB-Guest";
-const char* password = "UMBIT@YourServiceDesk";
+const char* ssid = "Fios-V1O9K";
+const char* password = "pod8964jar5260flap";
 
-const char* websocket_host = "158.121.180.60";
-const uint16_t websocket_port = 3000;             
-const char* websocket_path = "ws";             
+const char* websocket_host = "192.168.1.23";
+const uint16_t websocket_port = 5000;             
+const char* websocket_path = "/";             
 
 WebSocketsClient webSocket;
 
@@ -46,7 +46,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
             Serial.println("Connected to WebSocket.");
             break;
         case WStype_TEXT:
-            Serial.printf("Received message: %s\n", payload);
+            Serial.println("Receiving payload.");
             break;
         case WStype_ERROR:
             Serial.println("WebSocket error.");
@@ -59,6 +59,7 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
 void setup() {
     Serial.begin(115200);
 
+
     // Connect to Wi-Fi
     WiFi.begin(ssid, password);
     Serial.print("Connecting to WiFi");
@@ -69,17 +70,21 @@ void setup() {
     Serial.println(" Connected!");
     Serial.print("IP Address:" );
     Serial.println(WiFi.localIP());
+
+
     // WebSocket setup
     webSocket.begin(websocket_host, websocket_port, websocket_path);
     webSocket.onEvent(webSocketEvent);  // optional: handle incoming messages
     webSocket.setReconnectInterval(5000); // try reconnecting every 5s
 
+
+    // Set up traffic lights and sensors
     TrafficLight light1 = TrafficLight(green_pin_1, yellow_pin_1, red_pin_1);
     TrafficLight light2 = TrafficLight(green_pin_2, yellow_pin_2, red_pin_2);
-
+    // Line sensors
     Sensor line1 = Sensor(line_pin_1);
     Sensor line2 = Sensor(line_pin_2);
-
+    // Pir sensors
     Sensor pir1 = Sensor(pir_pin_1);
     Sensor pir2 = Sensor(pir_pin_2);
 

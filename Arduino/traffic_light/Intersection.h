@@ -55,12 +55,9 @@ public:
 
     // function to get get the colors of light 1 and light 2
     std::string getStateJSON() {
-        std::string state = "{\"light1\": {\"green\": " + std::to_string(m_light1.isGreen()) +
-                       ", \"yellow\": " + std::to_string(m_light1.isYellow()) +
-                       ", \"red\": " + std::to_string(m_light1.isRed()) + "}, " +
-                       "\"light2\": {\"green\": " + std::to_string(m_light2.isGreen()) +
-                       ", \"yellow\": " + std::to_string(m_light2.isYellow()) +
-                       ", \"red\": " + std::to_string(m_light2.isRed()) + "}}";
-        return state;
+        std::string light1 = m_light1.getJson();
+        std::string light2 = m_light2.getJson();
+        
+        return "{ \"light1\":" + light1 + ", \"light2\":" + light2 + "}";
     }
 };
