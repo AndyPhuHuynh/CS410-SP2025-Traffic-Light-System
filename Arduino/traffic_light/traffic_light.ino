@@ -28,11 +28,11 @@ Intersection *intersection;
 
 // Websocket connections
 
-const char* ssid = "Fios-V1O9K";
-const char* password = "pod8964jar5260flap";
+const char* ssid = "Fios-V1O9K"; // change wifi name
+const char* password = "pod8964jar5260flap";  // change wifi password
 
-const char* websocket_host = "192.168.1.23";
-const uint16_t websocket_port = 5000;             
+const char* websocket_host = "192.168.1.23"; // change server ip address
+const uint16_t websocket_port = 5000;
 const char* websocket_path = "/";             
 
 WebSocketsClient webSocket;

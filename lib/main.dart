@@ -44,7 +44,8 @@ class TrafficModule extends StatefulWidget {
 class _TrafficModuleState extends State<TrafficModule> {
   // variable _channel (type: WebSocketChannel)
   late WebSocketChannel _channel; // initialized later
-  int _remainingTime = 10; // Initial time in seconds
+  int _remainingTime1 = 10; // Initial time in seconds
+  int _remainingTime2 = 0; // Initial time in seconds
 
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
@@ -103,13 +104,16 @@ class _TrafficModuleState extends State<TrafficModule> {
               }
 
               try {
-                final decoded = jsonDecode(data); // decode the data and hold
-                String light1 = decoded["light1"]; // take section from data
-                String light2 = decoded["light2"]; // again
-                int time = decoded["countdown"]; // get the countdown
+                // decode the data and hold
+                Map<String, dynamic> decoded = jsonDecode(data);
+                String light1 = decoded['light1']; // take section from data
+                int time1 = decoded['timer1']; // get the first time
+                String light2 = decoded['light2']; // again
+                int time2 = decoded['timer2']; // get the second time
 
                 setState(() {
-                  _remainingTime = time;
+                  _remainingTime1 = time1;
+                  _remainingTime2 = time2;
                   _currentLight = lightColorNum(light1);
                   _currentLight2 = lightColorNum(light2);
                 });
@@ -271,7 +275,15 @@ class _TrafficModuleState extends State<TrafficModule> {
             children: [ // more than one widget
               const SizedBox(height: 30), // display the time
               Text(
-                'Time Remaining: $_remainingTime seconds', // text
+                'Time 1 Remaining: $_remainingTime1 seconds', // text
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orangeAccent,
+                ),
+              ),
+              Text(
+                'Time 2 Remaining: $_remainingTime2 seconds', // text
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
