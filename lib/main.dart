@@ -86,7 +86,7 @@ class _TrafficModuleState extends State<TrafficModule> {
     super.initState(); // calls the parent class's initState()
     // communication with server
     _channel = WebSocketChannel.connect( // WebSocket communication
-      Uri.parse('ws://172.22.144.99:3000'), // ip address, port
+      Uri.parse('ws://172.19.176.1:5000'), // ip address, port
     );
 
     // timeout timer
@@ -106,10 +106,10 @@ class _TrafficModuleState extends State<TrafficModule> {
               try {
                 // decode the data and hold
                 Map<String, dynamic> decoded = jsonDecode(data);
-                String light1 = decoded['light1']; // take section from data
-                int time1 = decoded['timer1']; // get the first time
-                String light2 = decoded['light2']; // again
-                int time2 = decoded['timer2']; // get the second time
+                String light1 = decoded["light1"]["color"]; // take section from data
+                int time1 = decoded["light1"]["timer"]; // get the first time
+                String light2 = decoded["light2"]["color"]; // again
+                int time2 = decoded["light2"]["timer"]; // get the second time
 
                 setState(() {
                   _remainingTime1 = time1;
