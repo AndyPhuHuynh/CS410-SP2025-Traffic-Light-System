@@ -1,16 +1,17 @@
 # traffic_light_system
+This is a final project for the class CS410 Intro to Software Engineering at UMass Boston
 
-Traffic light project
+To run and connect everything to the server:
+- The arduino, device running the server, and the device running the flutter app have to be on the same network
+- Run the server via the command "node ./server" in the project directory. You have to have node js installed
+- After running the server, it should display its ip address and port in the terminal
 
-## Getting Started
+- Open the file Arduino/traffic_light.ino
+    - Change the wifi ssid and password to your wifi's name and password
+    - Change the IP and port to the one displayed in the terminal from earlier
 
-This project is a starting point for a Flutter application.
+- Open the file lib.main.dart
+    - Under the initState function, change the ip address and port to the one displayed in the terminal by the server
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Compile and upload the arduino code. This should display it's ip in the serial monitor. 
+- On the device hosting the server, ping this ip by running the command "ping {ip}"

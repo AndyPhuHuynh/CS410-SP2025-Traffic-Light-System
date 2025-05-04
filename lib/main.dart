@@ -86,7 +86,7 @@ class _TrafficModuleState extends State<TrafficModule> {
     super.initState(); // calls the parent class's initState()
     // communication with server
     _channel = WebSocketChannel.connect( // WebSocket communication
-      Uri.parse('ws://172.19.176.1:5000'), // ip address, port
+      Uri.parse('ws://192.168.1.23:5000'), // ip address, port
     );
 
     // timeout timer
@@ -264,6 +264,10 @@ class _TrafficModuleState extends State<TrafficModule> {
       );
     }
 
+    String getRemainingTime(int time) {
+      return time == -1 ? 'N/A' : '$time seconds';
+    }
+
     @override
     Widget build(BuildContext context) {
       // basic structure
@@ -275,7 +279,7 @@ class _TrafficModuleState extends State<TrafficModule> {
             children: [ // more than one widget
               const SizedBox(height: 30), // display the time
               Text(
-                'Time 1 Remaining: $_remainingTime1 seconds', // text
+                'Time 1 Remaining: ${getRemainingTime(_remainingTime1)}', // text
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -283,7 +287,7 @@ class _TrafficModuleState extends State<TrafficModule> {
                 ),
               ),
               Text(
-                'Time 2 Remaining: $_remainingTime2 seconds', // text
+                'Time 2 Remaining: ${getRemainingTime(_remainingTime2)}', // text
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

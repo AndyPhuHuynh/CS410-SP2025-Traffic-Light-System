@@ -168,15 +168,15 @@ std::string TrafficLight::getJson() {
 
     if (m_isGreen) {
         color = "green";
-        time = std::to_string(greenTimer.getTimeSeconds());
+        time = std::to_string(greenTimer.getSecondsSinceStart());
     }
     else if (m_isYellow) {
         color = "yellow";
-        time = std::to_string(yellowTimer.getTimeSeconds());
+        time = std::to_string(yellowTimer.getSecondsSinceStart());
     }
     else {
         color = "red";
-        time = std::to_string(redTimer.getTimeSeconds());
+        time = std::to_string(redTimer.getSecondsSinceStart());
     }
 
     return "{ \"color\":   \"" + color + "\"  ,       \"timer\":    \"" + time + "\"   }";

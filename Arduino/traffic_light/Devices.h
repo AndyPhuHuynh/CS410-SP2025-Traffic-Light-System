@@ -12,8 +12,8 @@ enum class State {
     ConstantRed,
 };
 
-constexpr int greenToRed_GreenTime = 2000;
-constexpr int greenToRed_YellowTime = 1000;
+constexpr int greenToRed_GreenTime = 5000;
+constexpr int greenToRed_YellowTime = 3000;
 constexpr int greenToRed_TransitionTime = greenToRed_GreenTime + greenToRed_YellowTime;
 
 class TrafficLight {
@@ -27,8 +27,8 @@ class TrafficLight {
 
     State currentState;
 
-    Timer greenTimer = Timer(2000);
-    Timer yellowTimer = Timer(1000);
+    Timer greenTimer = Timer(greenToRed_GreenTime);
+    Timer yellowTimer = Timer(greenToRed_YellowTime);
     Timer redTimer = Timer(2000);
 public:
     TrafficLight(uint8_t green, uint8_t yellow, uint8_t red);
