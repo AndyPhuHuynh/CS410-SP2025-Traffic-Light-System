@@ -21,7 +21,7 @@ function broadcast(state) {
     });
   }
 
-// WIFI Connection to the Board 
+// WIFI Connection to the Board
 const port = net.createConnection({ host: '172.20.10.8', port: 5000 }, () => {
     console.log('Connected to Arduino');
   });
@@ -63,23 +63,8 @@ port.on('error', (err) => {
   broadcast("offline");
 });
 
-server.listen(5000, () => {
-    console.log('Server Running at port port 8080') // 
+server.listen(5000, '0.0.0.0', () => {
+  console.log('Server running at http://0.0.0.0:5000');
+}).on('error', (err) => {
+  console.error('Error occurred while starting the server:', err);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -34,26 +34,22 @@ void Intersection::startState(IntersectionState state) {
 }
 
 void Intersection::startLight1Green() {
-    Serial.println("1 Green");
     m_light1.setOnlyGreen();
     m_light2.setOnlyRed();
 }
 
 void Intersection::startLight2Green() {
-    Serial.println("2 Green");
     m_light1.setOnlyRed();
     m_light2.setOnlyGreen();
 }
 
 void Intersection::startSwitchLight1ToGreen() {
-    Serial.println("Switching to 1");
     m_light2.setState(State::GreenToRed);
     timer1.resetCountDown();
     timer1.start();
 }
 
 void Intersection::startSwitchLight2ToGreen() {
-    Serial.println("Switching to 2");
     m_light1.setState(State::GreenToRed);
     timer1.resetCountDown();
     timer1.start();

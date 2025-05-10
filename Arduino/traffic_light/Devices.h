@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #include "Timer.h"
 
@@ -19,6 +20,10 @@ class TrafficLight {
     uint8_t greenPin;
     uint8_t yellowPin;
     uint8_t redPin;
+
+    bool m_isRed;
+    bool m_isYellow;
+    bool m_isGreen;
 
     State currentState;
 
@@ -56,6 +61,25 @@ public:
     void updateConstantGreen();
     void updateGreenToRed();
     void updateConstantRed();
+
+    std::string getStateString() {
+        if (m_isRed) return "red";
+        if (m_isYellow) return "yellow";
+        if (m_isGreen) return "green";
+        return "off";
+    }
+
+    bool isGreen() {
+        return m_isGreen;
+    }
+
+    bool isYellow() {
+        return m_isYellow;
+    }
+
+    bool isRed() {
+        return m_isRed;
+    }
 };
 
 class Sensor {
