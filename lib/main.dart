@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart'; // import for user interface
 import 'package:web_socket_channel/web_socket_channel.dart'; // to connect to server
 import 'dart:convert'; // for json decoding
-import 'package:logger/logger.dart';
+import 'package:logger/logger.dart'; // to use logging
 import 'dart:async'; // for timer
 
 
@@ -49,7 +49,6 @@ class _TrafficModuleState extends State<TrafficModule> {
 
   // the track which light is turned on
   int _currentLight = 1; // 1 is red, 2 yellow, 3 green
-
   int _currentLight2 = 3; // 1 is red, 2 yellow, 3 green
 
   // the sensors
@@ -57,20 +56,22 @@ class _TrafficModuleState extends State<TrafficModule> {
   // bool lineSensor = false; // no detection, (if detection + red) -> yellow
   // bool pirSensor = false; // no detection, (if detection + green) -> red
 
-  // add functions if active
-  // add functions to send to output
+  // server will handle which light is which color and the timings will
 
-  var logger = Logger();
+  var logger = Logger(); // create for debugging
 
+  // if any error in connection then display a message
   void showConnectionError() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Connection error: Unable to reach server.'),
-        backgroundColor: Colors.red,
+        content: Text('Connection error: Unable to reach server.'), // message
+        backgroundColor: Colors.red, // color of background
       ),
     );
   }
 
+  // if any the connection is ended then display a message
+  // displaying in similar manner to error message
   void showConnectionClosed() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -80,8 +81,8 @@ class _TrafficModuleState extends State<TrafficModule> {
     );
   }
 
-  @override
-  void initState() {
+  @override // good practice
+  void initState() { // first state
     // the initial state
     super.initState(); // calls the parent class's initState()
     // communication with server
@@ -89,42 +90,47 @@ class _TrafficModuleState extends State<TrafficModule> {
       Uri.parse('ws://172.20.10.9:5000'), // ip address, port
     );
 
-    // timeout timer
+    // timeout timer (if the program is taking too long)
     Timer timeoutTimer = Timer(const Duration(seconds: 5), () {
-      logger.e('Connection timeout: No response from server.');
-      showConnectionError();
-      _channel.sink.close();
+      logger.e('Connection timeout: No response from server.'); // debugging
+      showConnectionError(); // print message
+      _channel.sink.close(); // close connection
     });
 
-    _channel.stream.listen(
+    _channel.stream.listen( // in the connection listen to data coming in
             (data) { // read add data
 
+              // cancel the timer is receiving data
               if (timeoutTimer.isActive) {
                 timeoutTimer.cancel();
               }
 
-              try {
-                // decode the data and hold
+              try { // decode the data and hold
+                // start by parsing all the data
                 Map<String, dynamic> decoded = jsonDecode(data);
                 String light1 = decoded["light1"]["color"]; // take section from data
                 int time1 = decoded["light1"]["timer"]; // get the first time
                 String light2 = decoded["light2"]["color"]; // again
                 int time2 = decoded["light2"]["timer"]; // get the second time
 
-                setState(() {
+                // have both lights and matching times at the end
+
+                setState(() { // make updates to the user interface
                   _remainingTime1 = time1;
                   _remainingTime2 = time2;
                   _currentLight = lightColorNum(light1);
                   _currentLight2 = lightColorNum(light2);
                 });
               } catch (e) {
-                logger.e('JSON decode error: $e');
+                logger.e('JSON decode error: $e'); // if errors then send message
               }
             },
-      onError: (error) {
+      onError: (error) { // if errors then send message
         logger.e('WebSocket error: $error');
         showConnectionError();
       },
+      // when done close connection (app will always be prepared to read new changes
+      // such as when pir or line sensors are triggered
       onDone: () {
         logger.w('WebSocket connection closed.');
         showConnectionClosed();
