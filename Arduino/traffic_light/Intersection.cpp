@@ -77,17 +77,23 @@ void Intersection::update() {
 }
 
 void Intersection::updateLight1Green() {
+    // If this sensor is red and a car is detected switch the other to green
     if (m_lineSensor1.read() == LOW && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight2ToGreen);
-    } else if (m_pirSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+    } 
+    // If the other sensor is green and a person is deteced, switch this sensor to green
+    else if (m_pirSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight2ToGreen);
     }
 }
 
 void Intersection::updateLight2Green() {
+    // If this sensor is red and a car is detected switch the other to green
     if (m_lineSensor2.read() == LOW && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight1ToGreen);
-    } else if (m_pirSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+    } 
+    // If the other sensor is green and a person is deteced, switch this sensor to green
+    else if (m_pirSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight1ToGreen);
     }
 }

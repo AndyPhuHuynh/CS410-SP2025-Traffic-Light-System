@@ -3,12 +3,13 @@
 #include <Arduino.h>
 
 Timer::Timer(unsigned long durationMilli) {
-        m_prevTimeMilli = millis();
-        m_timerDuration = durationMilli;
-    }
+    m_prevTimeMilli = millis();
+    m_timerDuration = durationMilli;
+}
 
 void Timer::update() {
     if (m_countingDown) {
+        // Get the delta time and add it to the timer
         unsigned long currentTime = millis();
         unsigned long deltaTMilli = currentTime - m_prevTimeMilli;
         m_prevTimeMilli = currentTime;

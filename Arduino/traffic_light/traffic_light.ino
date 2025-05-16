@@ -12,7 +12,7 @@ uint8_t line_pin_2 = 23;
 
 // Pir sensor pins (people sensors)
 uint8_t pir_pin_1 = 27;
-uint8_t pir_pin_2 = 32;
+uint8_t pir_pin_2 = 26;
 
 // Light 1 pins (for one side of intersection)
 uint8_t green_pin_1 = 17;
