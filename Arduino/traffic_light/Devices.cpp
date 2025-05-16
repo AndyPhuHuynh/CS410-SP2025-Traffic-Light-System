@@ -1,6 +1,7 @@
 #include "Devices.h"
 
 #include <Arduino.h>
+#include <format>
 
 // Must be created in setup or loop, not global space
 TrafficLight::TrafficLight(uint8_t green, uint8_t yellow, uint8_t red) : TrafficLight(green, yellow, red, State::AllOff) {
@@ -26,14 +27,17 @@ void TrafficLight::setupPins() {
 
 void TrafficLight::setGreenLight(uint8_t mode) {
     digitalWrite(greenPin, mode);
+    m_isGreen = mode == HIGH;
 }
 
 void TrafficLight::setYellowLight(uint8_t mode) {
     digitalWrite(yellowPin, mode);
+    m_isYellow = mode == HIGH;
 }
 
 void TrafficLight::setRedLight(uint8_t mode) {
     digitalWrite(redPin, mode);
+    m_isRed = mode == HIGH;
 }
 
 void TrafficLight::setAllOff() {
@@ -156,6 +160,26 @@ void TrafficLight::updateGreenToRed() {
 
 void TrafficLight::updateConstantRed() {
 
+}
+
+std::string TrafficLight::getJson() {
+    std::string color;
+    std::string time;
+
+    if (m_isGreen) {
+        color = "green";
+        time = std::to_string(greenTimer.getSecondsSinceStart());
+    }
+    else if (m_isYellow) {
+        color = "yellow";
+        time = std::to_string(yellowTimer.getSecondsSinceStart());
+    }
+    else {
+        color = "red";
+        time = std::to_string(redTimer.getSecondsSinceStart());
+    }
+
+    return "{ \"color\":   \"" + color + "\"  ,       \"timer\":    \"" + time + "\"   }";
 }
 
 Sensor::Sensor(uint8_t input) {

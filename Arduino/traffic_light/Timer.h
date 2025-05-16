@@ -18,4 +18,8 @@ class Timer {
     unsigned long getTimeMilli();
 
     double getTimeSeconds();
+
+    double getSecondsSinceStart() {
+      return (m_timerDuration / 1000) - getTimeSeconds();
+    }
   };
