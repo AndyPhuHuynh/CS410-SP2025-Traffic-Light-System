@@ -37,6 +37,10 @@ Pir Sensors:
 - Sensor 1 = 27
 - Sensor 2 = 26
 
+The layout for the intersection is shown below:
+
+![Intersection layout](/3D%20Road%20Layout.png)
+
 # 3. Setting up the Network
 In order for the arduino, server, and mobile app to all communicate with each other, the devices hosting each service should be on the same wifi network.
 
