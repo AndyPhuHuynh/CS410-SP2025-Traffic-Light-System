@@ -86,7 +86,7 @@ class _TrafficModuleState extends State<TrafficModule> {
     super.initState(); // calls the parent class's initState()
     // communication with server
     _channel = WebSocketChannel.connect( // WebSocket communication
-      Uri.parse('ws://192.168.1.23:5000'), // ip address, port
+      Uri.parse('ws://172.20.10.9:5000'), // ip address, port
     );
 
     // timeout timer

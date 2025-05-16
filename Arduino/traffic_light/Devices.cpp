@@ -182,6 +182,18 @@ std::string TrafficLight::getJson() {
     return "{ \"color\":   \"" + color + "\"  ,       \"timer\":    \"" + time + "\"   }";
 }
 
+bool TrafficLight::isGreen() {
+    return m_isGreen;
+}
+
+bool TrafficLight::isYellow() {
+    return m_isYellow;
+}
+
+bool TrafficLight::isRed() {
+    return m_isRed;
+}
+
 Sensor::Sensor(uint8_t input) {
     inputPin = input;
     setupPins();
