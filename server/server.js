@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app); // to set up server
 const wss = new WebSocket.Server({ server });
 app.use(express.static(path.join(__dirname, 'public'))); // serves static files (user interface)
-
+const net = require('net');
 
 // State of the traffic lights
 let trafficLights = {
@@ -25,6 +25,7 @@ function broadcast() {
         }
     });
 }
+
 
 
 // Handle websocket connections
@@ -122,3 +123,4 @@ server.listen(port, "0.0.0.0", () => {
 }).on('error', (err) => {
     console.error('Error occurred while starting the server:', err);
 });
+
