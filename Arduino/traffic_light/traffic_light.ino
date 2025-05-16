@@ -1,8 +1,8 @@
-#include "Devices.h" // include header like
-#include "Intersection.h" // include header file
+#include "Devices.h" // Header file for traffic lights and sensors
+#include "Intersection.h" // Header for intersection class
 
-#include <WiFi.h>
-#include <WebSocketsClient.h>
+#include <WiFi.h> // Header file to allow wifi connection
+#include <WebSocketsClient.h> // Header for WebSockets communication protocol
 
 #include <string>
 
@@ -12,7 +12,7 @@ uint8_t line_pin_2 = 23;
 
 // Pir sensor pins (people sensors)
 uint8_t pir_pin_1 = 27;
-uint8_t pir_pin_2 = 26;
+uint8_t pir_pin_2 = 32;
 
 // Light 1 pins (for one side of intersection)
 uint8_t green_pin_1 = 17;
@@ -28,10 +28,10 @@ Intersection *intersection;
 
 // Websocket connections
 
-const char* ssid = "Fios-V1O9K"; // change wifi name
-const char* password = "pod8964jar5260flap";  // change wifi password
+const char* ssid = "iPhone (122)"; // change wifi name
+const char* password = "password";  // change wifi password
 
-const char* websocket_host = "192.168.1.23"; // change server ip address
+const char* websocket_host = "172.20.10.9"; // change server ip address
 const uint16_t websocket_port = 5000;
 const char* websocket_path = "/";             
 
@@ -46,7 +46,6 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
             Serial.println("Connected to WebSocket.");
             break;
         case WStype_TEXT:
-            Serial.println("Receiving payload.");
             break;
         case WStype_ERROR:
             Serial.println("WebSocket error.");
@@ -101,6 +100,10 @@ void loop() {
     } else {
         // Serial.println("WebSocket not connected. Attempting to reconnect...");
     }
+
+    int state1 = digitalRead(pir_pin_1);
+    int state2 = digitalRead(pir_pin_2);
+
 
     delay(100); // small delay (100ms)
 }

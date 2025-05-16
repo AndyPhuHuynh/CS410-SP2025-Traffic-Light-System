@@ -42,3 +42,7 @@ double Timer::getTimeSeconds() {
     return static_cast<double>(m_timerMilli) / 1000;
 }
 
+double Timer::getSecondsSinceStart() {
+    return (m_timerDuration / 1000) - getTimeSeconds();
+}
+

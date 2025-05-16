@@ -77,7 +77,7 @@ void Intersection::update() {
 }
 
 void Intersection::updateLight1Green() {
-    if (m_lineSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+    if (m_lineSensor1.read() == LOW && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight2ToGreen);
     } else if (m_pirSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight2ToGreen);
@@ -85,7 +85,7 @@ void Intersection::updateLight1Green() {
 }
 
 void Intersection::updateLight2Green() {
-    if (m_lineSensor2.read() == HIGH && m_sensorCooldown.countDownEnded()) {
+    if (m_lineSensor2.read() == LOW && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight1ToGreen);
     } else if (m_pirSensor1.read() == HIGH && m_sensorCooldown.countDownEnded()) {
         setState(IntersectionState::SwitchLight1ToGreen);
@@ -141,3 +141,55 @@ void Intersection::endSwitchLight2ToGreen() {
     m_sensorCooldown.start();
 }
 
+std::string Intersection::getLight1GreenJson() {
+    return R"( 
+        {
+            "light1" : { "color" : "green", "timer" : -1},
+            "light2" : { "color" : "red", "timer" : -1}
+        }
+    )";
+}
+
+std::string Intersection::getLight2GreenJson() {
+    return R"( 
+        {
+            "light1" : { "color" : "red", "timer" : -1},
+            "light2" : { "color" : "green", "timer" : -1}
+        }
+    )";
+}
+
+std::string Intersection::getSwitchLight1ToGreenJson() {
+    if (!timer1.countDownEnded()) {
+        std::string light1json = " {  \"color\":  \"red\", \"timer\": \"" + std::to_string(timer1.getSecondsSinceStart()) + "\"}";
+        std::string light2json = m_light2.getJson();
+
+        return "{ \"light1\":" + light1json + ", \"light2\":" + light2json + "}";
+    } else {
+        return getLight1GreenJson();
+    }
+}
+
+std::string Intersection::getSwitchLight2ToGreenJson() {
+    if (!timer1.countDownEnded()) {
+        std::string light1json = m_light1.getJson();
+        std::string light2json = " {  \"color\":  \"red\", \"timer\": \"" + std::to_string(timer1.getSecondsSinceStart()) + "\"}";
+
+        return "{ \"light1\":" + light1json + ", \"light2\":" + light2json + "}";
+    } else {
+        return getLight2GreenJson();
+    }
+}
+
+std::string Intersection::getStateJSON() {
+    switch(m_currentState) {
+        case IntersectionState::Light1Green:
+            return getLight1GreenJson();
+        case IntersectionState::Light2Green:
+            return getLight2GreenJson();
+        case IntersectionState::SwitchLight1ToGreen:
+            return getSwitchLight1ToGreenJson();
+        case IntersectionState::SwitchLight2ToGreen:
+            return getSwitchLight2ToGreenJson();
+    }
+}
