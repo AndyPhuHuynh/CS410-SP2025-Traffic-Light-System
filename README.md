@@ -68,4 +68,4 @@ In the root directory of the project, run the command:
 
 This should start up the mobile app. After this, everything should be working and connected together. Changes in the traffic lights will be reflected on the mobile app in real-time.
 
-For related code documentation [click here](/documentation.md)
+For related code documentation [click here for the ESP32 documentation](/documentation.md) and [here for the Flutter documentation](https://andyphuhuynh.github.io/CS410-SP2025-Traffic-Light-System/)
