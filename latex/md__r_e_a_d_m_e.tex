@@ -1,0 +1,25 @@
+\chapter{traffic\+\_\+light\+\_\+system }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{traffic\_light\_system@{traffic\_light\_system}}
+\label{md__r_e_a_d_m_e_autotoc_md0}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md0}%
+
+
+This is a final project for the class CS410 Intro to Software Engineering at UMass Boston
+
+To run and connect everything to the server\+:
+\begin{DoxyItemize}
+\item The arduino, device running the server, and the device running the flutter app have to be on the same network
+\item Run the server via the command "{}node ./server"{} in the project directory. You have to have node js installed
+\item After running the server, it should display its ip address and port in the terminal
+\item Open the file Arduino/traffic\+\_\+light.\+ino
+\begin{DoxyItemize}
+\item Change the wifi ssid and password to your wifi\textquotesingle{}s name and password
+\item Change the IP and port to the one displayed in the terminal from earlier
+\end{DoxyItemize}
+\item Open the file lib.\+main.\+dart
+\begin{DoxyItemize}
+\item Under the init\+State function, change the ip address and port to the one displayed in the terminal by the server
+\end{DoxyItemize}
+\item Compile and upload the arduino code. This should display it\textquotesingle{}s ip in the serial monitor.
+\item On the device hosting the server, ping this ip by running the command "{}ping \{ip\}"{} 
+\end{DoxyItemize}
