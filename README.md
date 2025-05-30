@@ -67,3 +67,5 @@ In the root directory of the project, run the command:
 > flutter run
 
 This should start up the mobile app. After this, everything should be working and connected together. Changes in the traffic lights will be reflected on the mobile app in real-time.
+
+For related code documentation [click here](/documentation.md)
