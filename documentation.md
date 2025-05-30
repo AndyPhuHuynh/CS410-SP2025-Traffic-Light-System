@@ -1,3 +1,30 @@
+# ESP32 Documentation
+
+- [Devices.hpp](#deviceshpp)
+  - [Enumerations](#enumerations)
+  - [Constants](#constants)
+  - [Class: TrafficLight](#class-trafficlight)
+    - [Control Lights](#control-lights)
+    - [Set States](#set-states)
+    - [Start State Handlers](#start-state-handlers)
+    - [Update State Handlers](#update-state-handlers)
+    - [State JSON](#state-json)
+    - [Light status](#light-status)
+  - [Class: Sensor](#class-sensor)
+
+- [Intersection.hpp](#intersectionhpp)
+  - [Enumerations](#enumerations-1)
+  - [Constants](#constants-1)
+  - [Class: Intersection](#class-intersection)
+    - [Start State Handlers](#start-state-handlers-1)
+    - [Update State Handlers](#update-state-handlers-1)
+    - [End State Handlers](#end-state-handlers)
+    - [State JSON](#state-json-1)
+
+- [Timer.hpp](#timerhpp)
+  - [Class: Timer](#class-timer)
+
+
 # Devices.hpp
 
 ## Enumerations
@@ -18,7 +45,8 @@ Represents the state of the traffic light
 
 ```int greenToRed_TransitionTime``` - Total duration for the green-to-red transition (greenToRed_GreenTime + greenToRed_YellowTime).
 
-## Class: TrafficLight - A simple traffic light module
+## Class: TrafficLight
+A simple traffic light module
 
 ```TrafficLight(uint8_t green, uint8_t yellow, uint8_t red)``` - Constructs a traffic light with the given pin numbers in the default state of AllOff
 
